@@ -282,7 +282,6 @@ const Portrait = ({ accent, paper, ink }) => {
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
       }}>
-        forward pass
       </div>
     </div>
   );

@@ -113,19 +113,36 @@ const Blog = ({ accent, ink }) => {
 
   return (
     <ul style={{ margin: 0, paddingLeft: '1.1em' }}>
-      {items.map((post, i) => (
-        <li key={i} style={{ marginBottom: '0.55em', lineHeight: 1.45 }}>
-          <span style={{
-            color: ink + '88',
-            marginRight: 8,
-            fontVariantNumeric: 'tabular-nums',
-            fontSize: '0.9em',
-          }}>
-            <window.Editable value={post.date} />
-          </span>
-          <em><window.Editable value={post.title} /></em>
-        </li>
-      ))}
+      {items.map((post, i) => {
+        const titleNode = <em><window.Editable value={post.title} /></em>;
+        const linked = post.slug ? (
+          <a
+            href={'post.html?slug=' + encodeURIComponent(post.slug)}
+            style={{
+              color: accent,
+              textDecoration: 'underline',
+              textDecorationThickness: '0.5px',
+              textUnderlineOffset: '2px',
+            }}
+          >
+            {titleNode}
+          </a>
+        ) : titleNode;
+
+        return (
+          <li key={i} style={{ marginBottom: '0.55em', lineHeight: 1.45 }}>
+            <span style={{
+              color: ink + '88',
+              marginRight: 8,
+              fontVariantNumeric: 'tabular-nums',
+              fontSize: '0.9em',
+            }}>
+              <window.Editable value={post.date} />
+            </span>
+            {linked}
+          </li>
+        );
+      })}
     </ul>
   );
 };

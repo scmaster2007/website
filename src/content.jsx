@@ -49,10 +49,11 @@ const CONTENT = {
     'I love reading Marxist theory, my favorite author probably being Bordiga.',
   ],
 
-  // Blog posts (newest first). Placeholder entries — titles aren't clickable yet.
+  // Blog posts (newest first). `slug` must match a file at posts/<slug>.md
+  // (use only letters, digits, dashes, underscores). Omit `slug` to render
+  // the title as plain text instead of a link.
   blog: [
-    { date: '2026-05-04', title: 'Welcome to the site' },
-    { date: '2026-04-28', title: 'Notes on geometric deep learning' },
+    { date: '2026-05-04', title: 'welcome to site',           slug: '2026-05-04-welcome' }
   ],
 
   // Footer quote. Edit text/author to swap. Set text to '' to hide entirely.
