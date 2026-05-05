@@ -2,7 +2,7 @@
 
 const CONTENT = {
   name: 'Sungwoo Cho',
-  role: 'AI undergrad @ UC San Diego',
+  role: 'AI @ UC San Diego',
   address: [
     'UC San Diego',
     '9500 Gilman Drive',
@@ -48,6 +48,25 @@ const CONTENT = {
     'I am from the Changyeong Cho clan, and am closely related to Cho-Man-Sik.',
     'I love reading Marxist theory, my favorite author probably being Bordiga.',
   ],
+
+  // Blog posts (newest first). Placeholder entries — titles aren't clickable yet.
+  blog: [
+    { date: '2026-05-04', title: 'Welcome to the site' },
+    { date: '2026-04-28', title: 'Notes on geometric deep learning' },
+  ],
+
+  // Footer quote. Edit text/author to swap. Set text to '' to hide entirely.
+  // imageLeft / imageRight: paths or URLs for decorative images flanking the
+  // quote. Use 'uploads/your-file.jpg' for local files. Set to '' to hide.
+  // Defaults below are inline SVG placeholders so you can see the layout.
+  quote: {
+    text: 'The philosophers have only interpreted the world, in various ways; the point, however, is to change it',
+    author: 'Karl Marx',
+    imageLeft:
+      'uploads/leftimage.png', 
+    imageRight:
+      'uploads/rightimage.png'
+  },
 };
 
 window.CONTENT = CONTENT;

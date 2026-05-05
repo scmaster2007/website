@@ -111,7 +111,7 @@ const SectionHeader = ({ title, boxStyle, accent, ink, mono, collapsed, onToggle
   );
 };
 
-const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = true }) => {
+const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = true, grow = false }) => {
   const [collapsed, setCollapsed] = React.useState(false);
   const contentRef = React.useRef(null);
   const [contentHeight, setContentHeight] = React.useState(0);
@@ -154,6 +154,31 @@ const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = 
     wrap.border = `1px solid ${ink}40`;
     wrap.padding = '10px 14px 12px';
     wrap.background = 'transparent';
+  }
+
+  // `grow`: stretch this box to fill remaining vertical space in a flex column.
+  // We drop the collapsibility animation in this mode so flex sizing works cleanly.
+  if (grow) {
+    wrap.flex = '1 1 auto';
+    wrap.display = 'flex';
+    wrap.flexDirection = 'column';
+    wrap.marginBottom = 0;
+
+    return (
+      <div style={wrap}>
+        <SectionHeader
+          title={title}
+          boxStyle={boxStyle}
+          accent={accent}
+          ink={ink}
+          mono={boxStyle === 'mono'}
+          collapsible={false}
+        />
+        <div style={{ flex: 1, minHeight: 0 }}>
+          {children}
+        </div>
+      </div>
+    );
   }
 
   return (

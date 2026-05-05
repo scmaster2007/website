@@ -101,6 +101,35 @@ const FunFacts = ({ accent, ink }) => {
   return <window.EditableList items={window.CONTENT.funFacts} />;
 };
 
+// ---------- Blog ----------
+const Blog = ({ accent, ink }) => {
+  const items = window.CONTENT.blog || [];
+
+  if (items.length === 0) {
+    return (
+      <div style={{ fontSize: '0.92em', color: ink + 'a0' }}>No posts yet.</div>
+    );
+  }
+
+  return (
+    <ul style={{ margin: 0, paddingLeft: '1.1em' }}>
+      {items.map((post, i) => (
+        <li key={i} style={{ marginBottom: '0.55em', lineHeight: 1.45 }}>
+          <span style={{
+            color: ink + '88',
+            marginRight: 8,
+            fontVariantNumeric: 'tabular-nums',
+            fontSize: '0.9em',
+          }}>
+            <window.Editable value={post.date} />
+          </span>
+          <em><window.Editable value={post.title} /></em>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 // ---------- Contact ----------
 const Contact = ({ accent, ink }) => {
   const C = window.CONTENT;
@@ -137,4 +166,65 @@ const Identity = ({ accent, ink }) => {
   );
 };
 
-Object.assign(window, { About, Now, Research, FunFacts, Contact, Identity, A });
+// ---------- Quote (page footer) ----------
+const Quote = ({ accent, ink }) => {
+  const q = window.CONTENT.quote;
+  if (!q || (!q.text && !q.author && !q.imageLeft && !q.imageRight)) return null;
+
+  const imgStyle = {
+    width: 140,
+    height: 140,
+    objectFit: 'cover',
+    flex: '0 0 auto',
+    opacity: 0.92,
+  };
+
+  return (
+    <div style={{
+      maxWidth: 1000,
+      margin: '40px auto 0',
+      padding: '28px 16px 8px',
+      borderTop: `1px solid ${ink}25`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      gap: 28,
+    }}>
+      {q.imageLeft && (
+        <img src={q.imageLeft} alt="" style={imgStyle} />
+      )}
+
+      <div style={{
+        flex: '0 1 560px',
+        minWidth: 240,
+        textAlign: 'center',
+      }}>
+        {q.text && (
+          <div style={{
+            fontStyle: 'italic',
+            fontSize: '1.05em',
+            lineHeight: 1.6,
+            marginBottom: 10,
+          }}>
+            “<window.Editable value={q.text} />”
+          </div>
+        )}
+        {q.author && (
+          <div style={{
+            fontSize: '0.9em',
+            color: ink + '99',
+          }}>
+            — <window.Editable value={q.author} />
+          </div>
+        )}
+      </div>
+
+      {q.imageRight && (
+        <img src={q.imageRight} alt="" style={imgStyle} />
+      )}
+    </div>
+  );
+};
+
+Object.assign(window, { About, Now, Research, FunFacts, Blog, Quote, Contact, Identity, A });

@@ -45,7 +45,7 @@ const App = () => {
     document.body.style.fontSize = state.fontSize + 'px';
   }, [paper.paper, ink, font.stack, state.fontSize]);
 
-  const { Section, About, Now, Research, FunFacts, Contact, Identity, Portrait } = window;
+  const { Section, About, Now, Research, FunFacts, Blog, Quote, Contact, Identity, Portrait } = window;
 
   // identity card (always under portrait)
   const IdentityCard = () => (
@@ -64,9 +64,13 @@ const App = () => {
     </div>
   );
 
-  // assemble columns based on count
+  // assemble columns based on count.
+  // Each column is a flex column so the last section can `grow` to fill
+  // the remaining height — making all column bottoms line up.
+  const colStyle = { display: 'flex', flexDirection: 'column' };
+
   const portraitCol = (
-    <div>
+    <div style={colStyle}>
       <div style={{
         border: state.boxStyle === 'framed' ? `1px solid ${ink}` :
                 state.boxStyle === 'card' ? `1px solid ${ink}15` :
@@ -79,30 +83,33 @@ const App = () => {
         <Portrait accent={accentValue} paper={paper.paper} ink={ink} />
       </div>
       <IdentityCard />
-      <Section title="Contact" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+      <Section title="Contact" grow boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
         <Contact accent={accentValue} ink={ink} />
-      </Section>
-      <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
-        <FunFacts accent={accentValue} ink={ink} />
       </Section>
     </div>
   );
 
   const middleCol = (
-    <div>
+    <div style={colStyle}>
       <Section title="Info" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
         <About accent={accentValue} ink={ink} />
       </Section>
-      <Section title="Now" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+      <Section title="Now" grow boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
         <Now accent={accentValue} ink={ink} />
       </Section>
     </div>
   );
 
   const rightCol = (
-    <div>
+    <div style={colStyle}>
       <Section title="Research" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
         <Research accent={accentValue} ink={ink} />
+      </Section>
+      <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+        <FunFacts accent={accentValue} ink={ink} />
+      </Section>
+      <Section title="Blog" grow boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+        <Blog accent={accentValue} ink={ink} />
       </Section>
     </div>
   );
@@ -111,41 +118,49 @@ const App = () => {
   let layout;
   if (effectiveColumns === 3) {
     layout = (
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(200px, 220px) minmax(0, 1fr) minmax(0, 1.4fr)',
-        gap: 18,
-        maxWidth: 1180,
-        margin: '0 auto',
-        padding: '24px 20px 60px',
-      }}>
-        {portraitCol}
-        {middleCol}
-        {rightCol}
+      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '24px 20px 60px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(200px, 220px) minmax(0, 1fr) minmax(0, 1.4fr)',
+          gap: 18,
+          alignItems: 'stretch',
+        }}>
+          {portraitCol}
+          {middleCol}
+          {rightCol}
+        </div>
+        <Quote accent={accentValue} ink={ink} />
       </div>
     );
   } else if (effectiveColumns === 2) {
     layout = (
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(220px, 260px) minmax(0, 1fr)',
-        gap: 22,
-        maxWidth: 980,
-        margin: '0 auto',
-        padding: '24px 20px 60px',
-      }}>
-        {portraitCol}
-        <div>
-          <Section title="Info" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
-            <About accent={accentValue} ink={ink} />
-          </Section>
-          <Section title="Research" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
-            <Research accent={accentValue} ink={ink} />
-          </Section>
-          <Section title="Now" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
-            <Now accent={accentValue} ink={ink} />
-          </Section>
+      <div style={{ maxWidth: 980, margin: '0 auto', padding: '24px 20px 60px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(220px, 260px) minmax(0, 1fr)',
+          gap: 22,
+          alignItems: 'stretch',
+        }}>
+          {portraitCol}
+          <div style={colStyle}>
+            <Section title="Info" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+              <About accent={accentValue} ink={ink} />
+            </Section>
+            <Section title="Research" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+              <Research accent={accentValue} ink={ink} />
+            </Section>
+            <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+              <FunFacts accent={accentValue} ink={ink} />
+            </Section>
+            <Section title="Blog" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+              <Blog accent={accentValue} ink={ink} />
+            </Section>
+            <Section title="Now" grow boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+              <Now accent={accentValue} ink={ink} />
+            </Section>
+          </div>
         </div>
+        <Quote accent={accentValue} ink={ink} />
       </div>
     );
   } else {
@@ -173,9 +188,13 @@ const App = () => {
         <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
           <FunFacts accent={accentValue} ink={ink} />
         </Section>
+        <Section title="Blog" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+          <Blog accent={accentValue} ink={ink} />
+        </Section>
         <Section title="Contact" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
           <Contact accent={accentValue} ink={ink} />
         </Section>
+        <Quote accent={accentValue} ink={ink} />
       </div>
     );
   }
