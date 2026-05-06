@@ -1,4 +1,3 @@
-// Read-only text primitives kept for consistent rendering across sections.
 
 const identity = (value) => value;
 

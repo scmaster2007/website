@@ -8,6 +8,9 @@ const CONTENT = {
   ],
   email: 'solomon@ucsd.edu',
   emailAlt: 'suc035@ucsd.edu',
+  // CV link. Drop your PDF at the path below (e.g. uploads/cv.pdf).
+  // Set to '' to hide the CV link.
+  cv: 'uploads/cv.pdf',
 
   about: [
     'I am a 1st-year undergraduate at UC San Diego studying for a bachelors in Artificial Intelligence and a Minor in Pure Mathematics. I enjoy thinking about the intuition of deep learning, geometric deep learning, and mechanistic interpretability.',
@@ -19,7 +22,7 @@ const CONTENT = {
   research: [
     {
       authors: 'S. Cho, Tao Wang',
-      title: 'MOO in RL is determined by only the value function',
+      title: 'MOO in RL is determined by the value function',
       venue: 'ICLR MAIN 2027',
       links: [['draft', '#'], ['code', '#']],
     },
@@ -41,15 +44,29 @@ const CONTENT = {
   funFacts: [
     'I am originally from South Korea, but was raised in the US.',
     'I love playing the clarinet! My favorite piece is the Poulenc Sonata.',
-    'I like to learn about esoteric knowledge specifically related to Judaism.',
+    'I like to learn about esoteric knowledge specifically related to Judaism and the Gematria.',
     'I enjoy reading books about contemporary and political philosophy.',
   ],
 
   // Blog posts (newest first). `slug` must match a file at posts/<slug>.md
   // (use only letters, digits, dashes, underscores). Omit `slug` to render
   // the title as plain text instead of a link.
+  //
+  // To make a post password-protected:
+  //   1. Open encrypt.html in your browser.
+  //   2. Paste your markdown (with front matter), set the shared password,
+  //      click Encrypt, copy the output.
+  //   3. Save it as posts/<slug>.md.enc (note the .enc suffix).
+  //   4. Add the entry below with `locked: true` — the homepage will show
+  //      a lock icon instead of the date, and the link will prompt for
+  //      the password before rendering.
+  //
+  //   Example: { date: '2026-05-06', title: 'A private thought',
+  //              slug: '2026-05-06-private-thought', locked: true },
   blog: [
-    { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' }
+    { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },
+    { date: '2026-05-06', title: 'test for the locked.',
+      slug: '260506test1', locked: true}
   ],
 
   // Footer quote. Edit text/author to swap. Set text to '' to hide entirely.
@@ -58,7 +75,7 @@ const CONTENT = {
   // Defaults below are inline SVG placeholders so you can see the layout.
   quote: {
     text: 'Everything in the world depends on desire',
-    author: 'Moses de León',
+    author: 'The Zohar',
     imageLeft:
       'uploads/leftimage.png', 
     imageRight:

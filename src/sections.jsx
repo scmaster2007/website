@@ -102,6 +102,25 @@ const FunFacts = ({ accent, ink }) => {
 };
 
 // ---------- Blog ----------
+const LockIcon = ({ ink }) => (
+  <svg
+    width="10"
+    height="12"
+    viewBox="0 0 10 12"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ verticalAlign: '-1px', color: ink + 'aa' }}
+    aria-label="password protected"
+  >
+    <path
+      d="M 3 5 V 3.5 a 2 2 0 0 1 4 0 V 5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1"
+    />
+    <rect x="1.5" y="5" width="7" height="6" rx="0.5" fill="currentColor" />
+  </svg>
+);
+
 const Blog = ({ accent, ink }) => {
   const items = window.CONTENT.blog || [];
 
@@ -114,10 +133,15 @@ const Blog = ({ accent, ink }) => {
   return (
     <ul style={{ margin: 0, paddingLeft: '1.1em' }}>
       {items.map((post, i) => {
+        const isLocked = !!post.locked;
         const titleNode = <em><window.Editable value={post.title} /></em>;
-        const linked = post.slug ? (
+        const href = post.slug
+          ? 'post.html?slug=' + encodeURIComponent(post.slug) + (isLocked ? '&locked=1' : '')
+          : null;
+
+        const linked = href ? (
           <a
-            href={'post.html?slug=' + encodeURIComponent(post.slug)}
+            href={href}
             style={{
               color: accent,
               textDecoration: 'underline',
@@ -129,16 +153,34 @@ const Blog = ({ accent, ink }) => {
           </a>
         ) : titleNode;
 
+        const prefix = isLocked ? (
+          <span
+            title="Password protected"
+            style={{
+              marginRight: 8,
+              display: 'inline-flex',
+              alignItems: 'center',
+              minWidth: 90,
+            }}
+          >
+            <LockIcon ink={ink} />
+          </span>
+        ) : (
+          <span style={{
+            color: ink + '88',
+            marginRight: 8,
+            fontVariantNumeric: 'tabular-nums',
+            fontSize: '0.9em',
+            minWidth: 90,
+            display: 'inline-block',
+          }}>
+            <window.Editable value={post.date} />
+          </span>
+        );
+
         return (
           <li key={i} style={{ marginBottom: '0.55em', lineHeight: 1.45 }}>
-            <span style={{
-              color: ink + '88',
-              marginRight: 8,
-              fontVariantNumeric: 'tabular-nums',
-              fontSize: '0.9em',
-            }}>
-              <window.Editable value={post.date} />
-            </span>
+            {prefix}
             {linked}
           </li>
         );
@@ -152,6 +194,13 @@ const Contact = ({ accent, ink }) => {
   const C = window.CONTENT;
   const address = C.address;
 
+  const linkStyle = {
+    color: accent,
+    textDecoration: 'underline',
+    textDecorationThickness: '0.5px',
+    textUnderlineOffset: '2px',
+  };
+
   return (
     <div style={{ textAlign: 'center', fontSize: '0.92em', lineHeight: 1.5 }}>
       {address.map((l, i) => (
@@ -160,11 +209,27 @@ const Contact = ({ accent, ink }) => {
         </div>
       ))}
       <div style={{ height: 10 }}/>
-      <div><window.Editable value={C.phone} /></div>
-      <div><window.Editable value={C.email} style={{ color: accent, textDecoration: 'underline', textDecorationThickness: '0.5px', textUnderlineOffset: '2px' }} /></div>
-      <div style={{ fontSize: '0.85em', color: ink + '88' }}>
-        <window.Editable value={C.emailAlt} style={{ color: accent, textDecoration: 'underline', textDecorationThickness: '0.5px', textUnderlineOffset: '2px' }} />
-      </div>
+      {C.phone && <div><window.Editable value={C.phone} /></div>}
+      {C.email && (
+        <div><window.Editable value={C.email} style={linkStyle} /></div>
+      )}
+      {C.emailAlt && (
+        <div style={{ fontSize: '0.85em', color: ink + '88' }}>
+          <window.Editable value={C.emailAlt} style={linkStyle} />
+        </div>
+      )}
+      {C.cv && (
+        <div style={{ marginTop: 8, fontStyle: 'italic' }}>
+          <a
+            href={C.cv}
+            target="_blank"
+            rel="noreferrer"
+            style={linkStyle}
+          >
+            CV
+          </a>
+        </div>
+      )}
     </div>
   );
 };

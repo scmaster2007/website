@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encrypt — Sungwoo Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #0e0e10;
+    background: #fdfcf8;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 36px 22px 80px; }
+  h1 { font-style: italic; font-weight: 500; font-size: 1.6em; margin: 0 0 12px; }
+  p { margin: 0.6em 0; }
+  code { font-family: "JetBrains Mono", monospace; font-size: 0.88em; background: #00000010; padding: 1px 5px; border-radius: 3px; }
+  .field { margin: 18px 0; }
+  label { display: block; font-weight: 500; margin-bottom: 4px; }
+  input[type=password], textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 1em;
+    background: #fdfcf8;
+    color: #0e0e10;
+    border: 1px solid #00000030;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+  textarea { font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.5; resize: vertical; }
+  button {
+    padding: 7px 16px;
+    font-family: inherit;
+    font-size: 0.95em;
+    background: #fdfcf8;
+    color: #0e0e10;
+    border: 1px solid #0e0e10;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .out {
+    background: #f4f1e8;
+    border: 1px solid #00000018;
+    padding: 12px 14px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    word-break: break-all;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow: auto;
+    min-height: 60px;
+  }
+  small { color: #00000099; font-size: 0.85em; }
+  .status { margin-top: 10px; font-style: italic; color: #00000099; min-height: 1.4em; }
+  .err { color: #99000099; }
+  .back { font-size: 0.9em; opacity: 0.7; }
+  .back:hover { opacity: 1; }
+  ::selection { background: #00000020; }
+
+  /* Slim ink-toned scrollbar */
+  * { scrollbar-width: thin; scrollbar-color: #0e0e1040 transparent; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #0e0e1040; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #0e0e1080; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="index.html">← back</a>
+
+    <h1>Encrypt a post</h1>
+    <p>
+      Paste your markdown (with front matter), set a password, and click
+      <em>Encrypt</em>. Save the output as <code>posts/&lt;slug&gt;.md.enc</code>
+      in your repo, then add an entry to <code>CONTENT.blog</code> with
+      <code>locked: true</code>.
+    </p>
+    <p>
+      <small>
+        Algorithm: AES-GCM (256-bit key) with PBKDF2-SHA-256, 600,000 iterations.
+        Random 16-byte salt and 12-byte IV per encryption. Nothing leaves your
+        browser.
+      </small>
+    </p>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="off" placeholder="shared password">
+    </div>
+
+    <div class="field">
+      <label for="markdown">Markdown</label>
+      <textarea id="markdown" rows="14" spellcheck="false"
+                placeholder="---&#10;title: A private thought&#10;date: 2026-05-06&#10;---&#10;&#10;Body…"></textarea>
+    </div>
+
+    <div class="row">
+      <button id="encryptBtn">Encrypt</button>
+      <button id="copyBtn" disabled>Copy output</button>
+    </div>
+
+    <div class="status" id="status">&nbsp;</div>
+
+    <div class="field" style="margin-top: 20px;">
+      <label>Encrypted output</label>
+      <div id="output" class="out"></div>
+    </div>
+
+    <p><small>
+      Save the output as a single line in <code>posts/&lt;slug&gt;.md.enc</code>.
+      Forgetting the password = the post is unrecoverable.
+    </small></p>
+  </div>
+
+<script>
+const ITERATIONS = 600000;
+
+function bytesToBase64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+async function deriveKey(password, salt) {
+  const enc = new TextEncoder();
+  const baseKey = await crypto.subtle.importKey(
+    'raw', enc.encode(password),
+    { name: 'PBKDF2' }, false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: ITERATIONS, hash: 'SHA-256' },
+    baseKey,
+    { name: 'AES-GCM', length: 256 },
+    false, ['encrypt']
+  );
+}
+
+async function encrypt(markdown, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(password, salt);
+  const ct = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv }, key,
+    new TextEncoder().encode(markdown)
+  );
+  const blob = new Uint8Array(salt.byteLength + iv.byteLength + ct.byteLength);
+  blob.set(salt, 0);
+  blob.set(iv, salt.byteLength);
+  blob.set(new Uint8Array(ct), salt.byteLength + iv.byteLength);
+  return bytesToBase64(blob);
+}
+
+const statusEl = document.getElementById('status');
+const outputEl = document.getElementById('output');
+const copyBtn = document.getElementById('copyBtn');
+
+document.getElementById('encryptBtn').addEventListener('click', async () => {
+  const password = document.getElementById('password').value;
+  const md = document.getElementById('markdown').value;
+
+  outputEl.textContent = '';
+  copyBtn.disabled = true;
+  statusEl.classList.remove('err');
+
+  if (!password) { statusEl.innerHTML = '<span class="err">Password required.</span>'; return; }
+  if (!md) { statusEl.innerHTML = '<span class="err">Markdown required.</span>'; return; }
+
+  statusEl.textContent = 'Encrypting…';
+  try {
+    const b64 = await encrypt(md, password);
+    outputEl.textContent = b64;
+    statusEl.textContent = 'Done. Save the output as posts/<slug>.md.enc';
+    copyBtn.disabled = false;
+  } catch (err) {
+    statusEl.innerHTML = '<span class="err">Encryption failed: ' + (err.message || err) + '</span>';
+  }
+});
+
+copyBtn.addEventListener('click', async () => {
+  await navigator.clipboard.writeText(outputEl.textContent);
+  statusEl.textContent = 'Copied to clipboard.';
+});
+</script>
+</body>
+</html>
