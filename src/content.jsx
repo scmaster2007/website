@@ -64,9 +64,12 @@ const CONTENT = {
   //   Example: { date: '2026-05-06', title: 'A private thought',
   //              slug: '2026-05-06-private-thought', locked: true },
   blog: [
-    { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },
-    { date: '2026-05-06', title: 'test for the locked.',
-      slug: '260506test1', locked: true}
+	
+  { date: '2026-05-07', title: 'chronicles of the paper pt1', slug: '2026-05-07-paper-thoughts' }, 
+  { date: '2026-05-06', title: 'test for the locked.',
+      slug: '260506test1', locked: true},
+  { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },
+      
   ],
 
   // Footer quote. Edit text/author to swap. Set text to '' to hide entirely.
