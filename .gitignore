@@ -1,6 +1,2 @@
 .DS_Store
 .vscode/
-.claude/
-
-# Local-only utility — do not deploy publicly.
-encrypt.html
