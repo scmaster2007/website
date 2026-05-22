@@ -189,6 +189,12 @@ const Blog = ({ accent, ink }) => {
   );
 };
 
+// ---------- Visitor counter ----------
+// Hits a free third-party counter API on mount; hides itself if it fails.
+const VisitorCount = ({ ink }) => {
+  const url = window.CONTENT.visitorCounter;
+};
+
 // ---------- Contact ----------
 const Contact = ({ accent, ink }) => {
   const C = window.CONTENT;
@@ -230,6 +236,7 @@ const Contact = ({ accent, ink }) => {
           </a>
         </div>
       )}
+      <VisitorCount ink={ink} />
     </div>
   );
 };

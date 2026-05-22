@@ -253,7 +253,7 @@
 
     return (
       <section ref={sectionRef} style={{
-        position: 'relative', height: '400vh', background: '#070605',
+        position: 'relative', height: '1000vh', background: '#070605',
       }}>
         <style>{KEYFRAMES}</style>
         <div style={{
