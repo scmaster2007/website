@@ -45,7 +45,7 @@ const App = () => {
     document.body.style.fontSize = state.fontSize + 'px';
   }, [paper.paper, ink, font.stack, state.fontSize]);
 
-  const { Section, About, Now, Research, FunFacts, Blog, Quote, Contact, Identity, Portrait } = window;
+  const { Section, About, Now, Research, FunFacts, Blog, Quote, Contact, Identity, Portrait, PhilosophersStone } = window;
 
   // identity card (always under portrait)
   const IdentityCard = () => (
@@ -202,6 +202,7 @@ const App = () => {
   return (
     <div data-screen-label="Personal Site" style={{ minHeight: '100vh', background: paper.paper, color: ink }}>
       {layout}
+      {PhilosophersStone && <PhilosophersStone />}
     </div>
   );
 };

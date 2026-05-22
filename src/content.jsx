@@ -14,23 +14,17 @@ const CONTENT = {
 
   about: [
     'I am a 1st-year undergraduate at UC San Diego studying for a bachelors in Artificial Intelligence and a Minor in Pure Mathematics. I enjoy thinking about the intuition of deep learning, geometric deep learning, and mechanistic interpretability.',
-    'Most days I am studying for classes and reading fun papers. I also like to learn about new topics that excite me which individually occupy a broad domain of distinct subjects.',
+    'Most days I am studying for classes and reading fun papers. I also like to learn about new topics that excite me which oftentimes individually occupy a broad domain of distinct subjects.',
     'Right now I am working with Tao Wang under Sicun Gao\'s group, and also used to work in Pengtao Xie\'s lab.',
     'Feel free to reach out if you are interested in what I do / want to work together!'
   ],
 
   research: [
     {
-      authors: 'S. Cho, Tao Wang',
-      title: 'MOO in RL is determined by the value function',
-      venue: 'ICLR MAIN 2027',
-      links: [['draft', '#'], ['code', '#']],
-    },
-    {
-      authors: 'S. Cho',
-      title: '[WIP]',
+      authors: 'S. Cho, Tao Wang, Sicun Gao',
+      title: 'In preparation',
       venue: 'In preparation',
-      links: [['arxiv', '#'], ['poster', '#']],
+      links: [['draft', '#'], ['code', '#']],
     },
   ],
 
@@ -65,8 +59,8 @@ const CONTENT = {
   //              slug: '2026-05-06-private-thought', locked: true },
   blog: [
 	
-  { date: '2026-05-07', title: 'chronicles of the paper pt1', slug: '2026-05-07-paper-thoughts' }, 
-  { date: '2026-05-06', title: 'test for the locked.',
+  { date: '2026-05-07', title: 'Exciting News', slug: '2026-05-07-paper-thoughts' }, 
+  { date: '2026-05-06', title: 'locked #1',
       slug: '260506test1', locked: true},
   { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },
       
