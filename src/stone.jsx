@@ -182,6 +182,89 @@
     .stone-sweep { animation: stone-sweep 4.8s ease-in-out infinite; }
   `;
 
+  // ----- Matrix-style rain of Hebrew letters -----
+  // 22 letters of the Hebrew alphabet (also: 22 paths on the Tree of Life).
+  // Each column has a "drop" that falls; a faint dark overlay each frame
+  // leaves a trailing ghost behind the head.
+  const HEBREW = 'אבגדהוזחטיכלמנסעפצקרשת';
+
+  const HebrewRain = React.memo(function HebrewRain() {
+    const canvasRef = React.useRef(null);
+
+    React.useEffect(function () {
+      const canvas = canvasRef.current;
+      if (!canvas) return undefined;
+      const ctx = canvas.getContext('2d');
+      const fontSize = 18;
+      let columns = 0;
+      let drops = [];
+      let raf = 0;
+
+      function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        canvas.width = Math.max(1, Math.floor(w * dpr));
+        canvas.height = Math.max(1, Math.floor(h * dpr));
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        columns = Math.max(1, Math.floor(w / fontSize));
+        drops = new Array(columns).fill(0).map(function () {
+          return Math.random() * -h;
+        });
+      }
+
+      function frame() {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+
+        // Translucent dark overlay — leaves a fading trail.
+        ctx.fillStyle = 'rgba(7, 6, 5, 0.07)';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.font = fontSize + 'px "Source Serif 4", serif';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = 'rgba(220, 184, 110, 0.55)';
+
+        for (let i = 0; i < columns; i++) {
+          const ch = HEBREW.charAt(Math.floor(Math.random() * HEBREW.length));
+          const x = i * fontSize;
+          const y = drops[i];
+          ctx.fillText(ch, x, y);
+
+          if (y > h && Math.random() > 0.975) {
+            drops[i] = -fontSize;
+          }
+          drops[i] += fontSize * 0.28; // fall speed (lower = slower)
+        }
+
+        raf = requestAnimationFrame(frame);
+      }
+
+      resize();
+      window.addEventListener('resize', resize);
+      frame();
+
+      return function () {
+        cancelAnimationFrame(raf);
+        window.removeEventListener('resize', resize);
+      };
+    }, []);
+
+    return (
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          display: 'block',
+        }}
+      />
+    );
+  });
+
   const PhilosophersStone = () => {
     const sectionRef = React.useRef(null);
     const [progress, setProgress] = React.useState(0);
@@ -271,6 +354,21 @@
             pointerEvents: 'none',
           }}>
             <StoneEmblem />
+          </div>
+
+          {/* faint rain of ancient hebrew letters — appears with the darkness.
+              The radial mask carves an elliptical hole where the stone sits so
+              no letters or trails ever appear behind it. */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            opacity: track(progress, 0.30, 0.55) * 0.55,
+            pointerEvents: 'none',
+            WebkitMaskImage:
+              'radial-gradient(60vmin 75vmin at center, transparent 0%, transparent 68%, black 100%)',
+            maskImage:
+              'radial-gradient(60vmin 75vmin at center, transparent 0%, transparent 68%, black 100%)',
+          }}>
+            <HebrewRain />
           </div>
 
           {/* vignette deepens as we go inside */}
