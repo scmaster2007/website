@@ -7,8 +7,8 @@ const CONTENT = {
     'La Jolla, CA 92093',
   ],
   email: 'solomon@ucsd.edu',
-  emailAlt: 'suc035@ucsd.edu',
-  cv: 'uploads/cv.pdf',
+  emailAlt: 'sungwoocho2007@gmail.com',
+  cv: '',
   // Set to '' for hiding the buttons
   github:  'https://github.com/scmaster2007',
   twitter: '',
