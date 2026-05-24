@@ -1,6 +1,4 @@
-// Neural network portrait — animated MLP with weights lighting up on activation.
-// A small fully-connected net (4 layers). Input "spikes" propagate forward,
-// activating neurons and lighting up their outgoing weights briefly.
+// NN MLP portrait!
 
 const Portrait = ({ accent, paper, ink }) => {
   const canvasRef = React.useRef(null);
@@ -14,7 +12,6 @@ const Portrait = ({ accent, paper, ink }) => {
     if (!ctx) return;
     const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-    // ---- Network topology ----
     const layerSizes = [5, 8, 8, 6, 3];
     const layerOffsets = [];
     let totalEdges = 0;
@@ -24,8 +21,8 @@ const Portrait = ({ accent, paper, ink }) => {
     }
 
     const edgeWeights = Array.from({ length: totalEdges }, () => Math.random() * 2 - 1);
-    let layers = []; // each: array of {x, y, act}
-    let edges = []; // {from, to, fire}
+    let layers = []; 
+    let edges = []; 
 
     const buildGeometry = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -74,9 +71,7 @@ const Portrait = ({ accent, paper, ink }) => {
     resizeObserver?.observe(container);
     window.addEventListener('resize', onResize);
 
-    // ---- Forward-pass scheduling ----
-    // A "wave" is a forward propagation. We schedule a new one every ~1.6s.
-    // For each wave we precompute the firing pattern (which neurons activate at each layer).
+    // forward pass
     let waves = []; // each: {start, pattern: [activations per layer], hop}
 
     const scheduleWave = (now) => {
@@ -88,7 +83,6 @@ const Portrait = ({ accent, paper, ink }) => {
       while (idxs.size < numActive) idxs.add(Math.floor(Math.random() * inN));
       for (const i of idxs) pattern[0][i] = 0.7 + Math.random() * 0.3;
 
-      // Forward propagate (toy): activation = tanh(sum(w * a))
       for (let l = 0; l < layers.length - 1; l++) {
         const inLayer = pattern[l];
         const outN = layerSizes[l + 1];
@@ -110,8 +104,7 @@ const Portrait = ({ accent, paper, ink }) => {
       return {
         start: now,
         pattern,
-        // duration of one layer-to-layer hop
-        hop: hopDuration, // ms
+        hop: hopDuration, 
       };
     };
 
@@ -139,7 +132,7 @@ const Portrait = ({ accent, paper, ink }) => {
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const W = canvas.width, H = canvas.height;
-      // paper background, fully opaque (no trails)
+      // paper background, opaque..
       ctx.fillStyle = paper;
       ctx.fillRect(0, 0, W, H);
 

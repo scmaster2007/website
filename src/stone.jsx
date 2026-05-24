@@ -1,7 +1,6 @@
-// Philosopher's Stone — a scroll-driven descent at the foot of the page.
-// Scroll progress (0..1 through a tall sticky section) drives a zoom into
-// the emblem's central circle, a fade to dark, and the reveal of the stone
-// with the Tree of Life (as a neural network) shimmering inside it.
+// Philosopher's Alchemical Stone in the bottom..
+// Hebrew characters / zoom
+// Tree of Life from the Kabbalah. Very similar to a NN!
 
 (function () {
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -18,10 +17,9 @@
 
   const CREAM = [253, 252, 248];
   const VOID = [8, 6, 5];
-  const LUM  = [250, 250, 246]; // the "anti-void" — destination in dark mode
+  const LUM  = [250, 250, 246]; 
   const INK_DARK = [20, 19, 22];
 
-  // Parse '#rrggbb' (or 'rrggbb') into an [r,g,b] tuple; returns null on bad input.
   const hexToRgb = (h) => {
     if (typeof h !== 'string') return null;
     const m = h.replace('#', '').match(/^([0-9a-f]{6})$/i);
@@ -50,7 +48,7 @@
   ];
 
   // Tree of Life rendered as a small neural network — memoized so it never
-  // re-renders during scroll (its shimmer is pure CSS).
+  // re-renders during scroll
   const TreeOfLife = React.memo(function TreeOfLife() {
     return (
       <svg viewBox="0 0 200 318" width="100%" height="100%"
@@ -83,7 +81,7 @@
     );
   });
 
-  // The squared-circle emblem (circle > triangle > square > circle).
+  // The squared-circle
   // Uses currentColor so the wrapper can tint it without re-rendering.
   const StoneEmblem = React.memo(function StoneEmblem() {
     return (
@@ -101,7 +99,7 @@
     );
   });
 
-  // The stone itself: a translucent gold/red gem with the Tree inside.
+  // The stone itself: a translucent gold/red gem.
   const StoneGem = React.memo(function StoneGem() {
     return (
       <div className="stone-breathe" style={{
@@ -194,15 +192,10 @@
   `;
 
   // ----- Matrix-style rain of Hebrew letters -----
-  // 22 letters of the Hebrew alphabet (also: 22 paths on the Tree of Life).
-  // Each column has a "drop" that falls; a faint dark overlay each frame
-  // leaves a trailing ghost behind the head.
   const HEBREW = 'אבגדהוזחטיכלמנסעפצקרשת';
 
   const HebrewRain = React.memo(function HebrewRain({ isDark }) {
     const canvasRef = React.useRef(null);
-    // Keep the current "isDark" in a ref so the frame loop reads live values
-    // without needing to restart on every theme toggle.
     const darkRef = React.useRef(!!isDark);
     React.useEffect(function () { darkRef.current = !!isDark; }, [isDark]);
 
@@ -233,14 +226,11 @@
         const h = canvas.clientHeight;
         const dark = darkRef.current;
 
-        // Trail-fade overlay matches the destination bg (light vs dark mode).
         ctx.fillStyle = dark ? 'rgba(250, 250, 246, 0.07)' : 'rgba(7, 6, 5, 0.07)';
         ctx.fillRect(0, 0, w, h);
 
         ctx.font = fontSize + 'px "Source Serif 4", serif';
         ctx.textBaseline = 'top';
-        // In dark mode (descending to light), use a deep amber so the
-        // characters read on the bright bg. In light mode, the classic gold.
         ctx.fillStyle = dark ? 'rgba(120, 60, 18, 0.55)' : 'rgba(220, 184, 110, 0.55)';
 
         for (let i = 0; i < columns; i++) {
@@ -252,7 +242,7 @@
           if (y > h && Math.random() > 0.975) {
             drops[i] = -fontSize;
           }
-          drops[i] += fontSize * 0.28; // fall speed (lower = slower)
+          drops[i] += fontSize * 0.2; // fall speed (lower = slower)
         }
 
         raf = requestAnimationFrame(frame);
@@ -326,9 +316,7 @@
       };
     }, [reduced]);
 
-    // Drag the body's own background along with the section's bg as you
-    // descend — keeps the scrollbar gutter (which inherits body bg) in step
-    // with the scene, so there's no jarring stripe at the bottom.
+   
     React.useEffect(function () {
       if (reduced) return undefined;
       const dest = isDark ? LUM : VOID;
@@ -364,7 +352,6 @@
     const emblemColor = lerpColor(startInk, [212, 175, 90], track(progress, 0.20, 0.50));
     const bg = lerpColor(startBg, destRGB, track(progress, 0.24, 0.58));
     const vignette = track(progress, 0.40, 0.66);
-    // Stone fades/grows in while the emblem is still fading out, so the
     // golden centre dot cross-fades straight into the stone — no empty gap.
     const stoneOpacity = track(progress, 0.46, 0.74);
     const stoneScale = lerp(0.4, 1, easeOut(track(progress, 0.46, 0.88)));
@@ -393,9 +380,7 @@
             <StoneEmblem />
           </div>
 
-          {/* faint rain of ancient hebrew letters — appears with the descent.
-              The radial mask carves an elliptical hole where the stone sits so
-              no letters or trails ever appear behind it. */}
+          {/* faint rain of ancient hebrew letters. */}
           <div style={{
             position: 'absolute', inset: 0,
             opacity: track(progress, 0.30, 0.55) * 0.55,

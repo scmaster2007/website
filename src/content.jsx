@@ -9,6 +9,9 @@ const CONTENT = {
   email: 'solomon@ucsd.edu',
   emailAlt: 'suc035@ucsd.edu',
   cv: 'uploads/cv.pdf',
+  // Set to '' for hiding the buttons
+  github:  'https://github.com/scmaster2007',
+  twitter: '',
 
   about: [
     'I am a 1st-year undergraduate at UC San Diego studying for a bachelors in Artificial Intelligence and a Minor in Pure Mathematics. I enjoy thinking about the intuition of deep learning, geometric deep learning, and mechanistic interpretability.',
@@ -43,7 +46,7 @@ const CONTENT = {
 
   blog: [
 	
-  { date: '2026-05-07', title: 'Exciting News', slug: '2026-05-07-paper-thoughts' }, 
+  { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts' }, 
   { date: '2026-05-06', title: 'locked #1',
       slug: '260506test1', locked: true},
   { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },

@@ -1,45 +1,79 @@
-// Main app — assembles the layout.
+// Layout for app
 
-// Small floating toggle in the top-right of the page.
-// Shows the icon of the mode it will SWITCH TO (moon when light, sun when dark).
-const ThemeToggle = ({ isDark, onToggle, ink, paper }) => (
-  <button
-    onClick={onToggle}
-    aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-    title={isDark ? 'switch to light' : 'switch to dark'}
-    style={{
-      position: 'fixed',
-      top: 14, right: 14, zIndex: 100,
-      width: 36, height: 36, padding: 0,
-      borderRadius: '50%',
-      border: `1px solid ${ink}30`,
-      background: paper,
-      color: ink,
-      cursor: 'pointer',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
-    }}
-  >
-    {isDark ? (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-        <circle cx="12" cy="12" r="4"/>
-        <line x1="12" y1="3"  x2="12" y2="6"/>
-        <line x1="12" y1="18" x2="12" y2="21"/>
-        <line x1="3"  y1="12" x2="6"  y2="12"/>
-        <line x1="18" y1="12" x2="21" y2="12"/>
-        <line x1="5.6"  y1="5.6"  x2="7.8"  y2="7.8"/>
-        <line x1="16.2" y1="16.2" x2="18.4" y2="18.4"/>
-        <line x1="5.6"  y1="18.4" x2="7.8"  y2="16.2"/>
-        <line x1="16.2" y1="7.8"  x2="18.4" y2="5.6"/>
-      </svg>
-    ) : (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M 21 12.8 A 9 9 0 1 1 11.2 3 a 7 7 0 0 0 9.8 9.8 Z"/>
-      </svg>
+// Styling for buttons in the corner.
+const iconBtnStyle = (ink, paper) => ({
+  width: 36, height: 36, padding: 0,
+  borderRadius: '50%',
+  border: `1px solid ${ink}30`,
+  background: paper,
+  color: ink,
+  cursor: 'pointer',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
+  textDecoration: 'none',
+});
+
+const SunIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+    <circle cx="12" cy="12" r="4"/>
+    <line x1="12" y1="3"  x2="12" y2="6"/>
+    <line x1="12" y1="18" x2="12" y2="21"/>
+    <line x1="3"  y1="12" x2="6"  y2="12"/>
+    <line x1="18" y1="12" x2="21" y2="12"/>
+    <line x1="5.6"  y1="5.6"  x2="7.8"  y2="7.8"/>
+    <line x1="16.2" y1="16.2" x2="18.4" y2="18.4"/>
+    <line x1="5.6"  y1="18.4" x2="7.8"  y2="16.2"/>
+    <line x1="16.2" y1="7.8"  x2="18.4" y2="5.6"/>
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M 21 12.8 A 9 9 0 1 1 11.2 3 a 7 7 0 0 0 9.8 9.8 Z"/>
+  </svg>
+);
+
+const GithubIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.78-.25.78-.55v-2c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18.92-.26 1.9-.39 2.88-.39.98 0 1.96.13 2.88.39 2.19-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.13v3.16c0 .31.21.66.79.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+  </svg>
+);
+
+const XIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+);
+
+const NavButtons = ({ isDark, onToggle, ink, paper, github, twitter }) => (
+  <div style={{
+    position: 'fixed', top: 14, right: 14, zIndex: 100,
+    display: 'flex', gap: 8,
+  }}>
+    {github && (
+      <a href={github} target="_blank" rel="noreferrer"
+         aria-label="GitHub" title="GitHub"
+         style={iconBtnStyle(ink, paper)}>
+        <GithubIcon />
+      </a>
     )}
-  </button>
+    {twitter && (
+      <a href={twitter} target="_blank" rel="noreferrer"
+         aria-label="X / Twitter" title="X / Twitter"
+         style={iconBtnStyle(ink, paper)}>
+        <XIcon />
+      </a>
+    )}
+    <button
+      onClick={onToggle}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={isDark ? 'switch to light' : 'switch to dark'}
+      style={iconBtnStyle(ink, paper)}>
+      {isDark ? <SunIcon /> : <MoonIcon />}
+    </button>
+  </div>
 );
 
 const App = () => {
@@ -53,7 +87,7 @@ const App = () => {
   }/*EDITMODE-END*/;
 
   const [state, setState] = React.useState(() => {
-    // Initial theme: saved preference > OS preference > TWEAK_DEFAULTS
+    // Theme is dependent on the theme of your OS.
     let paperId = TWEAK_DEFAULTS.paperId;
     try {
       const saved = localStorage.getItem('theme');
@@ -70,7 +104,6 @@ const App = () => {
     setState(s => ({ ...s, paperId: s.paperId === 'dark' ? 'bone' : 'dark' }));
   }, []);
 
-  // Keep <html data-theme="..."> and localStorage in sync with the chosen paper.
   React.useEffect(() => {
     const theme = state.paperId === 'dark' ? 'dark' : 'light';
     document.documentElement.dataset.theme = theme;
@@ -96,8 +129,7 @@ const App = () => {
   const font   = window.FONT_OPTIONS.find(o => o.id === state.fontId)    || window.FONT_OPTIONS[0];
 
   const ink = paper.ink;
-  // In dark mode, use a softer blue that reads cleanly on the dark paper.
-  // (The configured accent — usually classic-blue — is too dark for dark mode.)
+  // Softer blue in dark mode
   const accentValue = isDark
     ? '#8ab4f8'
     : (accent.value === 'currentColor' ? ink : accent.value);
@@ -115,7 +147,7 @@ const App = () => {
 
   const { Section, About, Now, Research, FunFacts, Blog, Quote, Contact, Identity, Portrait, PhilosophersStone } = window;
 
-  // identity card (always under portrait)
+  // Contact Card
   const IdentityCard = () => (
     <div style={{
       padding: '14px 14px 16px',
@@ -132,9 +164,7 @@ const App = () => {
     </div>
   );
 
-  // assemble columns based on count.
-  // Each column is a flex column so the last section can `grow` to fill
-  // the remaining height — making all column bottoms line up.
+  // assemble columns based on count, flex columns.
   const colStyle = { display: 'flex', flexDirection: 'column' };
 
   const portraitCol = (
@@ -269,7 +299,14 @@ const App = () => {
 
   return (
     <div data-screen-label="Personal Site" style={{ minHeight: '100vh', background: paper.paper, color: ink }}>
-      <ThemeToggle isDark={isDark} onToggle={toggleTheme} ink={ink} paper={paper.paper} />
+      <NavButtons
+        isDark={isDark}
+        onToggle={toggleTheme}
+        ink={ink}
+        paper={paper.paper}
+        github={window.CONTENT.github}
+        twitter={window.CONTENT.twitter}
+      />
       {layout}
       {PhilosophersStone && <PhilosophersStone paper={paper.paper} ink={ink} isDark={isDark} />}
     </div>

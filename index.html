@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sungwoo Cho</title>
 <script>
-  // Apply saved theme BEFORE any CSS paints, to avoid a flash of the wrong colors.
   (function () {
     var t = 'light';
     try {
@@ -19,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="icon" type="image/x-icon" href="favicon.ico"><!-- fallback for older browsers -->
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&family=Newsreader:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   /* Theme palette — light defaults, dark overrides */
@@ -27,15 +26,15 @@
     --ink: #0e0e10;
     --paper: #fdfcf8;
     --selection: rgba(0, 0, 0, 0.12);
-    --thumb: rgba(14, 14, 16, 0.25);
-    --thumb-hover: rgba(14, 14, 16, 0.5);
+    --thumb: rgba(14, 14, 16, 0.10);
+    --thumb-hover: rgba(14, 14, 16, 0.3);
   }
   :root[data-theme="dark"] {
     --ink: #e8e6df;
     --paper: #0e0e10;
     --selection: rgba(255, 255, 255, 0.14);
-    --thumb: rgba(232, 230, 223, 0.22);
-    --thumb-hover: rgba(232, 230, 223, 0.45);
+    --thumb: rgba(232, 230, 223, 0.10);
+    --thumb-hover: rgba(232, 230, 223, 0.3);
   }
 
   html, body { margin: 0; padding: 0; overscroll-behavior-y: none; }
@@ -53,7 +52,6 @@
   p { margin: 0.6em 0; }
   ::selection { background: var(--selection); }
 
-  /* Subtle paper texture using SVG noise — very faint */
   body::before {
     content: '';
     position: fixed;
@@ -65,12 +63,22 @@
   }
   #root { position: relative; z-index: 1; min-height: 100vh; }
 
-  /* Slim scrollbar — adapts to theme */
-  * { scrollbar-width: thin; scrollbar-color: var(--thumb) transparent; }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--thumb); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--thumb-hover); }
+  html { scrollbar-width: none; -ms-overflow-style: none; }
+  ::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+  /* Custom scroll marker */
+  #scrollmark {
+    position: fixed;
+    top: 0;
+    right: 4px;
+    width: 5px;
+    height: 40px;
+    background: var(--thumb);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    transition: background 0.25s ease;
+  }
 
   /* Custom pen-nib cursor (SVG, hotspot at the tip).
      The paper-colored outline keeps it visible in either theme. */
@@ -84,16 +92,45 @@
 
   /* Quote flanking images — they have white backgrounds.
      Light mode: multiply blend makes the white blend into the cream paper.
-     Dark mode: invert flips white→black (matches page) and icon dark→light. */
+     Dark mode: invert flips white→black and icon dark→light, then `lighten`
+     swaps the now-black image bg for whatever the actual page bg is — so
+     the image's bg matches the page exactly, no visible seam. */
   .quote-flank { mix-blend-mode: multiply; transition: filter 0.25s ease; }
   :root[data-theme="dark"] .quote-flank {
-    mix-blend-mode: normal;
+    mix-blend-mode: lighten;
     filter: invert(1) hue-rotate(180deg);
   }
 </style>
 </head>
 <body>
 <div id="root"></div>
+<div id="scrollmark"></div>
+<script>
+  // Floating scroll marker — driven by scroll position. No native scrollbar.
+  (function () {
+    var mark = document.getElementById('scrollmark');
+    if (!mark) return;
+    var minH = 32;
+    function update() {
+      var docH = document.documentElement.scrollHeight;
+      var viewH = window.innerHeight;
+      var scrollable = docH - viewH;
+      if (scrollable <= 1) { mark.style.display = 'none'; return; }
+      mark.style.display = '';
+      var h = Math.max(minH, Math.round(viewH * (viewH / docH)));
+      var maxTop = viewH - h - 4;
+      var top = (window.scrollY / scrollable) * maxTop + 2;
+      mark.style.height = h + 'px';
+      mark.style.top = top + 'px';
+    }
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    if ('MutationObserver' in window) {
+      new MutationObserver(update).observe(document.body, { childList: true, subtree: true });
+    }
+  })();
+</script>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>

@@ -31,7 +31,7 @@ const A = ({ href, children, accent }) => {
   );
 };
 
-// ---------- About / Info ----------
+// About
 const About = ({ accent, ink }) => {
   const paras = window.CONTENT.about;
 
@@ -46,12 +46,12 @@ const About = ({ accent, ink }) => {
   );
 };
 
-// ---------- Now ----------
+// Now
 const Now = ({ accent, ink }) => {
   return <window.EditableList items={window.CONTENT.now} />;
 };
 
-// ---------- Research ----------
+// Research
 const Research = ({ accent, ink }) => {
   const items = window.CONTENT.research;
 
@@ -96,12 +96,12 @@ const Research = ({ accent, ink }) => {
   );
 };
 
-// ---------- Fun Facts ----------
+// Funfacts
 const FunFacts = ({ accent, ink }) => {
   return <window.EditableList items={window.CONTENT.funFacts} />;
 };
 
-// ---------- Blog ----------
+// Blog
 const LockIcon = ({ ink }) => (
   <svg
     width="10"
@@ -189,13 +189,8 @@ const Blog = ({ accent, ink }) => {
   );
 };
 
-// ---------- Visitor counter ----------
-// Hits a free third-party counter API on mount; hides itself if it fails.
-const VisitorCount = ({ ink }) => {
-  const url = window.CONTENT.visitorCounter;
-};
 
-// ---------- Contact ----------
+// Contact
 const Contact = ({ accent, ink }) => {
   const C = window.CONTENT;
   const address = C.address;
@@ -236,12 +231,11 @@ const Contact = ({ accent, ink }) => {
           </a>
         </div>
       )}
-      <VisitorCount ink={ink} />
     </div>
   );
 };
 
-// ---------- Identity ----------
+// Identity
 const Identity = ({ accent, ink }) => {
   return (
     <div style={{ textAlign: 'center' }}>
@@ -255,7 +249,7 @@ const Identity = ({ accent, ink }) => {
   );
 };
 
-// ---------- Quote (page footer) ----------
+// Quote
 const Quote = ({ accent, ink }) => {
   const q = window.CONTENT.quote;
   if (!q || (!q.text && !q.author && !q.imageLeft && !q.imageRight)) return null;

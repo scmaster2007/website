@@ -1,8 +1,4 @@
-// Section box. Style varies by `boxStyle`:
-//   'framed'      — 1px hairline border, classic
-//   'underlined'  — no box, just an underline under the heading
-//   'card'        — soft elevated card on cream
-//   'mono'        — ASCII-bracketed terminal block
+//Boxstyle
 
 const SectionHeader = ({ title, boxStyle, accent, ink, mono, collapsed, onToggle, collapsible }) => {
   const handleClick = collapsible ? onToggle : undefined;
@@ -157,7 +153,6 @@ const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = 
   }
 
   // `grow`: stretch this box to fill remaining vertical space in a flex column.
-  // We drop the collapsibility animation in this mode so flex sizing works cleanly.
   if (grow) {
     wrap.flex = '1 1 auto';
     wrap.display = 'flex';
