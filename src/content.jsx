@@ -8,7 +8,7 @@ const CONTENT = {
   ],
   email: 'solomon@ucsd.edu',
   emailAlt: 'sungwoocho2007@gmail.com',
-  cv: '',
+  cv: '67',
   // Set to '' for hiding the buttons
   github:  'https://github.com/scmaster2007',
   twitter: '',
