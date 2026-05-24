@@ -1,5 +1,47 @@
 // Main app — assembles the layout.
 
+// Small floating toggle in the top-right of the page.
+// Shows the icon of the mode it will SWITCH TO (moon when light, sun when dark).
+const ThemeToggle = ({ isDark, onToggle, ink, paper }) => (
+  <button
+    onClick={onToggle}
+    aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    title={isDark ? 'switch to light' : 'switch to dark'}
+    style={{
+      position: 'fixed',
+      top: 14, right: 14, zIndex: 100,
+      width: 36, height: 36, padding: 0,
+      borderRadius: '50%',
+      border: `1px solid ${ink}30`,
+      background: paper,
+      color: ink,
+      cursor: 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
+    }}
+  >
+    {isDark ? (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+        <circle cx="12" cy="12" r="4"/>
+        <line x1="12" y1="3"  x2="12" y2="6"/>
+        <line x1="12" y1="18" x2="12" y2="21"/>
+        <line x1="3"  y1="12" x2="6"  y2="12"/>
+        <line x1="18" y1="12" x2="21" y2="12"/>
+        <line x1="5.6"  y1="5.6"  x2="7.8"  y2="7.8"/>
+        <line x1="16.2" y1="16.2" x2="18.4" y2="18.4"/>
+        <line x1="5.6"  y1="18.4" x2="7.8"  y2="16.2"/>
+        <line x1="16.2" y1="7.8"  x2="18.4" y2="5.6"/>
+      </svg>
+    ) : (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M 21 12.8 A 9 9 0 1 1 11.2 3 a 7 7 0 0 0 9.8 9.8 Z"/>
+      </svg>
+    )}
+  </button>
+);
+
 const App = () => {
   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     "paperId": "bone",
@@ -10,8 +52,30 @@ const App = () => {
     "boxStyle": "framed"
   }/*EDITMODE-END*/;
 
-  const [state] = React.useState(TWEAK_DEFAULTS);
+  const [state, setState] = React.useState(() => {
+    // Initial theme: saved preference > OS preference > TWEAK_DEFAULTS
+    let paperId = TWEAK_DEFAULTS.paperId;
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark') paperId = 'dark';
+      else if (saved === 'light') paperId = 'bone';
+      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) paperId = 'dark';
+    } catch (e) {}
+    return { ...TWEAK_DEFAULTS, paperId };
+  });
   const [viewportWidth, setViewportWidth] = React.useState(() => window.innerWidth);
+
+  const isDark = state.paperId === 'dark';
+  const toggleTheme = React.useCallback(() => {
+    setState(s => ({ ...s, paperId: s.paperId === 'dark' ? 'bone' : 'dark' }));
+  }, []);
+
+  // Keep <html data-theme="..."> and localStorage in sync with the chosen paper.
+  React.useEffect(() => {
+    const theme = state.paperId === 'dark' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('theme', theme); } catch (e) {}
+  }, [state.paperId]);
 
   React.useEffect(() => {
     let rafId = 0;
@@ -32,7 +96,11 @@ const App = () => {
   const font   = window.FONT_OPTIONS.find(o => o.id === state.fontId)    || window.FONT_OPTIONS[0];
 
   const ink = paper.ink;
-  const accentValue = accent.value === 'currentColor' ? ink : accent.value;
+  // In dark mode, use a softer blue that reads cleanly on the dark paper.
+  // (The configured accent — usually classic-blue — is too dark for dark mode.)
+  const accentValue = isDark
+    ? '#8ab4f8'
+    : (accent.value === 'currentColor' ? ink : accent.value);
   const effectiveColumns =
     viewportWidth < 760 ? 1 :
     viewportWidth < 1040 ? Math.min(state.columns, 2) :
@@ -201,8 +269,9 @@ const App = () => {
 
   return (
     <div data-screen-label="Personal Site" style={{ minHeight: '100vh', background: paper.paper, color: ink }}>
+      <ThemeToggle isDark={isDark} onToggle={toggleTheme} ink={ink} paper={paper.paper} />
       {layout}
-      {PhilosophersStone && <PhilosophersStone />}
+      {PhilosophersStone && <PhilosophersStone paper={paper.paper} ink={ink} isDark={isDark} />}
     </div>
   );
 };

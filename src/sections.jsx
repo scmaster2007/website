@@ -281,7 +281,7 @@ const Quote = ({ accent, ink }) => {
       gap: 28,
     }}>
       {q.imageLeft && (
-        <img src={q.imageLeft} alt="" style={imgStyle} />
+        <img className="quote-flank" src={q.imageLeft} alt="" style={imgStyle} />
       )}
 
       <div style={{
@@ -310,7 +310,7 @@ const Quote = ({ accent, ink }) => {
       </div>
 
       {q.imageRight && (
-        <img src={q.imageRight} alt="" style={imgStyle} />
+        <img className="quote-flank" src={q.imageRight} alt="" style={imgStyle} />
       )}
     </div>
   );

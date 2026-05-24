@@ -18,6 +18,17 @@
 
   const CREAM = [253, 252, 248];
   const VOID = [8, 6, 5];
+  const LUM  = [250, 250, 246]; // the "anti-void" — destination in dark mode
+  const INK_DARK = [20, 19, 22];
+
+  // Parse '#rrggbb' (or 'rrggbb') into an [r,g,b] tuple; returns null on bad input.
+  const hexToRgb = (h) => {
+    if (typeof h !== 'string') return null;
+    const m = h.replace('#', '').match(/^([0-9a-f]{6})$/i);
+    if (!m) return null;
+    const n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
 
   // --- Tree of Life: 10 sephirot, 22 connecting paths ---
   const SEPHIROT = [
@@ -134,15 +145,15 @@
     );
   });
 
-  const FinalQuote = React.memo(function FinalQuote() {
+  const FinalQuote = React.memo(function FinalQuote({ isDark }) {
     return (
       <div style={{
         textAlign: 'center',
-        color: '#e8dabe',
+        color: isDark ? '#3a2418' : '#e8dabe',
         fontStyle: 'italic',
         fontSize: '1.2em',
         letterSpacing: '0.015em',
-        textShadow: '0 0 20px rgba(230,150,70,0.45)',
+        textShadow: isDark ? 'none' : '0 0 20px rgba(230,150,70,0.45)',
       }}>
         as above, so below
       </div>
@@ -164,17 +175,17 @@
       100% { transform: translateX(250%) rotate(22deg); }
     }
     .tol-edge {
-      stroke: #e7a85a; stroke-width: 1.6; stroke-linecap: round;
+      stroke: #d99249; stroke-width: 1.6; stroke-linecap: round;
       stroke-dasharray: 4 7;
       animation: tol-flow 1.9s linear infinite;
     }
     .tol-core {
-      fill: #ffe7ad;
-      filter: drop-shadow(0 0 3px rgba(255,205,120,.95));
+      fill: #ffcc7a;
+      filter: drop-shadow(0 0 3px rgba(255,170,80,.95));
       animation: tol-corepulse 3.1s ease-in-out infinite;
     }
     .tol-halo {
-      fill: #f6b860;
+      fill: #e08a3c;
       filter: blur(3px);
       animation: tol-halopulse 3.1s ease-in-out infinite;
     }
@@ -188,8 +199,12 @@
   // leaves a trailing ghost behind the head.
   const HEBREW = 'אבגדהוזחטיכלמנסעפצקרשת';
 
-  const HebrewRain = React.memo(function HebrewRain() {
+  const HebrewRain = React.memo(function HebrewRain({ isDark }) {
     const canvasRef = React.useRef(null);
+    // Keep the current "isDark" in a ref so the frame loop reads live values
+    // without needing to restart on every theme toggle.
+    const darkRef = React.useRef(!!isDark);
+    React.useEffect(function () { darkRef.current = !!isDark; }, [isDark]);
 
     React.useEffect(function () {
       const canvas = canvasRef.current;
@@ -216,14 +231,17 @@
       function frame() {
         const w = canvas.clientWidth;
         const h = canvas.clientHeight;
+        const dark = darkRef.current;
 
-        // Translucent dark overlay — leaves a fading trail.
-        ctx.fillStyle = 'rgba(7, 6, 5, 0.07)';
+        // Trail-fade overlay matches the destination bg (light vs dark mode).
+        ctx.fillStyle = dark ? 'rgba(250, 250, 246, 0.07)' : 'rgba(7, 6, 5, 0.07)';
         ctx.fillRect(0, 0, w, h);
 
         ctx.font = fontSize + 'px "Source Serif 4", serif';
         ctx.textBaseline = 'top';
-        ctx.fillStyle = 'rgba(220, 184, 110, 0.55)';
+        // In dark mode (descending to light), use a deep amber so the
+        // characters read on the bright bg. In light mode, the classic gold.
+        ctx.fillStyle = dark ? 'rgba(120, 60, 18, 0.55)' : 'rgba(220, 184, 110, 0.55)';
 
         for (let i = 0; i < columns; i++) {
           const ch = HEBREW.charAt(Math.floor(Math.random() * HEBREW.length));
@@ -265,7 +283,14 @@
     );
   });
 
-  const PhilosophersStone = () => {
+  const PhilosophersStone = ({ paper, ink, isDark }) => {
+    const startBg  = hexToRgb(paper) || CREAM;
+    const startInk = hexToRgb(ink)   || INK_DARK;
+    // "As above, so below" — the descent's destination mirrors the entry.
+    // Light mode (cream above) → void below. Dark mode (dark above) → light below.
+    const destRGB = isDark ? LUM : VOID;
+    const destHex = isDark ? '#fafaf6' : '#070605';
+    const vignetteColor = isDark ? 'rgba(250,250,246,0.85)' : 'rgba(0,0,0,0.85)';
     const sectionRef = React.useRef(null);
     const [progress, setProgress] = React.useState(0);
     const [reduced, setReduced] = React.useState(false);
@@ -301,11 +326,23 @@
       };
     }, [reduced]);
 
+    // Drag the body's own background along with the section's bg as you
+    // descend — keeps the scrollbar gutter (which inherits body bg) in step
+    // with the scene, so there's no jarring stripe at the bottom.
+    React.useEffect(function () {
+      if (reduced) return undefined;
+      const dest = isDark ? LUM : VOID;
+      document.body.style.background = lerpColor(
+        startBg, dest, track(progress, 0.24, 0.58)
+      );
+    }, [progress, startBg, isDark, reduced]);
+
     // Reduced motion: a calm, static stacked version — no scroll-jacking.
     if (reduced) {
       return (
         <section style={{
-          background: '#070605', color: '#e8dabe',
+          background: destHex,
+          color: isDark ? '#3a2418' : '#e8dabe',
           padding: '90px 22px',
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', gap: 44,
@@ -315,7 +352,7 @@
             <StoneEmblem />
           </div>
           <StoneGem />
-          <FinalQuote />
+          <FinalQuote isDark={isDark} />
         </section>
       );
     }
@@ -324,8 +361,8 @@
     // 0.20–0.62: it zooms, eased so the onset is gentle rather than abrupt.
     const emblemScale = lerp(1, 12, easeIn(track(progress, 0.20, 0.62)));
     const emblemOpacity = 1 - track(progress, 0.48, 0.66);
-    const emblemColor = lerpColor([20, 19, 22], [212, 175, 90], track(progress, 0.20, 0.50));
-    const bg = lerpColor(CREAM, VOID, track(progress, 0.24, 0.58));
+    const emblemColor = lerpColor(startInk, [212, 175, 90], track(progress, 0.20, 0.50));
+    const bg = lerpColor(startBg, destRGB, track(progress, 0.24, 0.58));
     const vignette = track(progress, 0.40, 0.66);
     // Stone fades/grows in while the emblem is still fading out, so the
     // golden centre dot cross-fades straight into the stone — no empty gap.
@@ -336,7 +373,7 @@
 
     return (
       <section ref={sectionRef} style={{
-        position: 'relative', height: '1000vh', background: '#070605',
+        position: 'relative', height: '1000vh', background: destHex,
       }}>
         <style>{KEYFRAMES}</style>
         <div style={{
@@ -356,7 +393,7 @@
             <StoneEmblem />
           </div>
 
-          {/* faint rain of ancient hebrew letters — appears with the darkness.
+          {/* faint rain of ancient hebrew letters — appears with the descent.
               The radial mask carves an elliptical hole where the stone sits so
               no letters or trails ever appear behind it. */}
           <div style={{
@@ -368,14 +405,14 @@
             maskImage:
               'radial-gradient(60vmin 75vmin at center, transparent 0%, transparent 68%, black 100%)',
           }}>
-            <HebrewRain />
+            <HebrewRain isDark={isDark} />
           </div>
 
-          {/* vignette deepens as we go inside */}
+          {/* vignette closes inward — matches the destination (void or lum) */}
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
             background:
-              'radial-gradient(ellipse at 50% 48%, transparent 36%, rgba(0,0,0,0.85) 100%)',
+              'radial-gradient(ellipse at 50% 48%, transparent 36%, ' + vignetteColor + ' 100%)',
             opacity: vignette,
           }} />
 
@@ -404,7 +441,7 @@
               opacity: quoteOpacity,
               transform: 'translateY(' + quoteShift + 'px)',
             }}>
-              <FinalQuote />
+              <FinalQuote isDark={isDark} />
             </div>
           </div>
         </div>
