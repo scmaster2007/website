@@ -277,7 +277,6 @@
     const startBg  = hexToRgb(paper) || CREAM;
     const startInk = hexToRgb(ink)   || INK_DARK;
     // "As above, so below" — the descent's destination mirrors the entry.
-    // Light mode (cream above) → void below. Dark mode (dark above) → light below.
     const destRGB = isDark ? LUM : VOID;
     const destHex = isDark ? '#fafaf6' : '#070605';
     const vignetteColor = isDark ? 'rgba(250,250,246,0.85)' : 'rgba(0,0,0,0.85)';

@@ -25,7 +25,7 @@ const CONTENT = {
       authors: 'S. Cho, Tao Wang, Sicun Gao',
       title: 'In preparation',
       venue: 'In preparation',
-      links: [['draft', '#'], ['code', '#']],
+      links: [['', '#'], ['', '#']],
     },
   ],
 
