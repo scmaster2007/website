@@ -14,18 +14,18 @@ const CONTENT = {
   twitter: '',
 
   about: [
-    'I am a 1st-year undergraduate at UC San Diego studying for a bachelors in Artificial Intelligence and a Minor in Pure Mathematics. I enjoy thinking about the intuition of deep learning, geometric deep learning, and mechanistic interpretability.',
-    'Most days I am studying for classes and reading fun papers. I also like to learn about new topics that excite me which oftentimes individually occupy a broad domain of distinct subjects.',
-    'Right now I am working with Tao Wang under Sicun Gao\'s group, and also used to work in Pengtao Xie\'s lab.',
-    'Feel free to reach out if you are interested in what I do / want to work together!'
+    'I am a 1st-year undergraduate at UC San Diego pursuing a bachelors in Artificial Intelligence and a Minor in Pure Mathematics. I enjoy thinking about the intuition of deep learning, math, and mechanistic interpretability.',
+    'Most days I am studying for classes and reading fun papers. I also like to learn about new topics that excite me, which oftentimes all occupy a broad domain of different subjects.',
+    'Right now I\'m working with Tao Wang under Sicun Gao\'s group, and also used to work in Pengtao Xie\'s lab.',
+    'Feel free to reach out if you are interested in what I do or want to work together!'
   ],
 
   research: [
     {
-      authors: 'S. Cho, Tao Wang, Sicun Gao',
+      authors: 'S. Cho*, Tao Wang, Sicun Gao',
       title: 'In preparation',
-      venue: 'In preparation',
-      links: [['', '#'], ['', '#']],
+      venue: '',
+      links: [],
     },
   ],
 
@@ -33,7 +33,7 @@ const CONTENT = {
     `Reading: There will be a scientific theory of deep learning.`,
     `Coding: some scripts for our paper`,
     `Taking: CSE30, CSE100R, CSE101, and CSE151A. `,
-    `P.S. Scroll all the way down!`,
+    `*P.S.* Scroll all the way down!`,
   ],
 
   funFacts: [

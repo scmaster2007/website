@@ -91,6 +91,7 @@ const Research = ({ accent, ink }) => {
         marginTop: 8, fontSize: '0.88em', color: ink + '88',
       }}>
         Note: works in progress marked with <span style={{ display: 'inline-block', width: 8, height: 8, background: accent }}/> are unpublished drafts.
+        Names marked with * are my name!. 
       </div>
     </div>
   );
