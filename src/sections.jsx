@@ -132,7 +132,10 @@ const Blog = ({ accent, ink }) => {
   }
 
   return (
-    <ul style={{ margin: 0, paddingLeft: '1.1em' }}>
+    <ul style={{
+      margin: 0,
+      paddingLeft: '1.1em',
+    }}>
       {items.map((post, i) => {
         const isLocked = !!post.locked;
         const titleNode = <em><window.Editable value={post.title} /></em>;

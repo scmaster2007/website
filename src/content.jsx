@@ -46,11 +46,11 @@ const CONTENT = {
 
   blog: [
 	
+    { date: '2026-05-25', title: 'agi and labor', slug: 'agiandlabor'},
   { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts' }, 
   { date: '2026-05-06', title: 'locked #1',
       slug: '260506test1', locked: true},
   { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },
-      
   ],
 
   quote: {

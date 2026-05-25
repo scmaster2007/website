@@ -107,7 +107,7 @@ const SectionHeader = ({ title, boxStyle, accent, ink, mono, collapsed, onToggle
   );
 };
 
-const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = true, grow = false }) => {
+const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = true, grow = false, scroll = false }) => {
   const [collapsed, setCollapsed] = React.useState(false);
   const contentRef = React.useRef(null);
   const [contentHeight, setContentHeight] = React.useState(0);
@@ -154,10 +154,22 @@ const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = 
 
   // `grow`: stretch this box to fill remaining vertical space in a flex column.
   if (grow) {
-    wrap.flex = '1 1 auto';
+    // Two flavors:
+    //   grow         → fill remaining column space, contributing the section's
+    //                  content size to the column's intrinsic height (Contact, Now).
+    //   grow + scroll → fill remaining column space, but DON'T contribute content
+    //                   size (Blog) — so the column can stay short and the
+    //                   internal list scrolls when posts overflow.
+    if (scroll) {
+      wrap.flex = '1 1 0';        // basis 0 — section's content doesn't bloat the column
+      wrap.overflow = 'hidden';   // clip; the inner div handles the scroll
+    } else {
+      wrap.flex = '1 1 auto';     // basis auto — content sizes the section naturally
+    }
     wrap.display = 'flex';
     wrap.flexDirection = 'column';
     wrap.marginBottom = 0;
+    wrap.minHeight = 0;
 
     return (
       <div style={wrap}>
@@ -169,7 +181,11 @@ const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = 
           mono={boxStyle === 'mono'}
           collapsible={false}
         />
-        <div style={{ flex: 1, minHeight: 0 }}>
+        <div style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: scroll ? 'auto' : 'visible',
+        }}>
           {children}
         </div>
       </div>

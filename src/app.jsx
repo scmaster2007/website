@@ -87,13 +87,13 @@ const App = () => {
   }/*EDITMODE-END*/;
 
   const [state, setState] = React.useState(() => {
-    // Theme is dependent on the theme of your OS.
-    let paperId = TWEAK_DEFAULTS.paperId;
+    // Default theme is light for everyone; OS preference is ignored. The
+    // user's last toggle (if any) is restored from localStorage.
+    let paperId = 'bone';
     try {
       const saved = localStorage.getItem('theme');
       if (saved === 'dark') paperId = 'dark';
       else if (saved === 'light') paperId = 'bone';
-      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) paperId = 'dark';
     } catch (e) {}
     return { ...TWEAK_DEFAULTS, paperId };
   });
@@ -206,7 +206,7 @@ const App = () => {
       <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
         <FunFacts accent={accentValue} ink={ink} />
       </Section>
-      <Section title="Blog" grow boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+      <Section title="Blog" grow scroll boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
         <Blog accent={accentValue} ink={ink} />
       </Section>
     </div>
