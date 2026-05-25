@@ -39,6 +39,25 @@ const useStored = (key, initial, normalize = identity) => {
   return [val, set];
 };
 
+// Parse inline bold: **text** or *text* → <strong>text</strong>.
+// Returns either the original string (when no markers) or an array of
+// strings and <strong> nodes for React to render.
+const parseInlineBold = (text) => {
+  if (typeof text !== 'string' || text.indexOf('*') === -1) return text;
+  const regex = /\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+  const parts = [];
+  let lastIdx = 0;
+  let key = 0;
+  let m;
+  while ((m = regex.exec(text)) !== null) {
+    if (m.index > lastIdx) parts.push(text.slice(lastIdx, m.index));
+    parts.push(<strong key={'b' + (key++)}>{m[1] || m[2]}</strong>);
+    lastIdx = m.index + m[0].length;
+  }
+  if (lastIdx < text.length) parts.push(text.slice(lastIdx));
+  return parts.length > 0 ? parts : text;
+};
+
 const Editable = ({ multiline = false, placeholder = '', style = {}, as = 'span', value }) => {
   const displayValue = value ?? '';
 
@@ -51,7 +70,9 @@ const Editable = ({ multiline = false, placeholder = '', style = {}, as = 'span'
         ...style,
       }}
     >
-      {displayValue || <span style={{ opacity: 0.4 }}>{placeholder}</span>}
+      {displayValue
+        ? parseInlineBold(displayValue)
+        : <span style={{ opacity: 0.4 }}>{placeholder}</span>}
     </Tag>
   );
 };

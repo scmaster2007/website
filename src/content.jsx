@@ -33,13 +33,13 @@ const CONTENT = {
     `Reading: There will be a scientific theory of deep learning.`,
     `Coding: some scripts for our paper`,
     `Taking: CSE30, CSE100R, CSE101, and CSE151A. `,
-    `*P.S.* Scroll all the way down!`,
+    `*P.S. Scroll all the way down!*`,
   ],
 
   funFacts: [
     'I am originally from South Korea, but was raised in the US.',
-    'I love playing the clarinet! My favorite piece is the Poulenc Sonata.',
-    'I like to learn about esoteric knowledge specifically related to Judaism and the Kabbalah.',
+    'I love playing the clarinet (been playing it for over 9 years!) My favorite piece is the Poulenc Sonata.',
+    'I like to learn about esoteric knowledge specifically related to Judaism, Kabbalah, and Hermeticism. I promise I\'m not a LARPer, I\'ve read the Zohar! ',
     'I enjoy reading books about contemporary and political philosophy.',
   ],
 
@@ -48,7 +48,7 @@ const CONTENT = {
 	
     { date: '2026-05-25', title: 'agi and labor', slug: 'agiandlabor'},
   { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts' }, 
-  { date: '2026-05-06', title: 'locked #1',
+  { date: '2026-05-06', title: 'test',
       slug: '260506test1', locked: true},
   { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },
   ],

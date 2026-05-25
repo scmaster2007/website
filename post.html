@@ -224,6 +224,71 @@
     transition: opacity 0.12s ease, background 0.25s ease;
   }
 
+  /* squircle fall! */
+  .physics-side {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 200px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .physics-side.left  { left: 0; }
+  .physics-side.right { right: 0; }
+  .physics-side canvas { display: block; width: 100%; height: 100%; }
+
+  /* narrowwww view */
+  @media (max-width: 1100px) {
+    .physics-side { display: none; }
+  }
+
+  /* ──────── Music toggle button — inline next to the post title ──────── */
+  .post-title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px; /* preserves the gap before the date */
+  }
+  .post-title-row .post-title { flex: 1; margin: 0; }
+  #music-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.55;
+    transition: opacity 0.25s ease, background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  #music-btn:hover { opacity: 0.9; }
+  #music-btn.playing { opacity: 1; }
+  #music-btn svg { width: 14px; height: 14px; display: block; }
+  #music-btn .icon-pause { display: none; }
+  #music-btn.playing .icon-play { display: none; }
+  #music-btn.playing .icon-pause { display: block; }
+
+  /* Asuka dance */
+  .side-gif {
+    position: fixed;
+    bottom: 0;
+    width: 180px;
+    height: auto;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .side-gif.left  { left: 10px; }
+  .side-gif.right { right: 10px;
+  }
+  @media (max-width: 1300px) {
+    .side-gif { display: none; }
+  }
+
   .katex {
   font-size: 1.05em;
   }
@@ -252,6 +317,203 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
+  <!-- Physics cascade: small squared circles falling down each sidebar. -->
+  <div class="physics-side left"  aria-hidden="true"><canvas></canvas></div>
+  <div class="physics-side right" aria-hidden="true"><canvas></canvas></div>
+
+  <!-- Side mascot GIFs. Drop a transparent-bg GIF at uploads/asuka.gif  -->
+  <img class="side-gif left"  src="uploads/asuka.gif" alt="" aria-hidden="true" onerror="this.remove()">
+  <img class="side-gif right" src="uploads/asuka.gif" alt="" aria-hidden="true" onerror="this.remove()">
+
+  <script>
+    // Music toggle. The button lives inside the post header (further down in
+    // the DOM), so we wait for DOMContentLoaded before wiring it up.
+    (function () {
+      function init() {
+        var btn   = document.getElementById('music-btn');
+        var audio = document.getElementById('music-audio');
+        if (!btn || !audio) return;
+        audio.volume = 0.5;
+
+        btn.addEventListener('click', function () {
+          if (audio.paused) {
+            audio.play()
+              .then(function () { btn.classList.add('playing'); })
+              .catch(function (err) {
+                console.warn('music play failed:', err);
+              });
+          } else {
+            audio.pause();
+            btn.classList.remove('playing');
+          }
+        });
+
+        audio.addEventListener('ended', function () {
+          btn.classList.remove('playing');
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+  <script>
+    // Small physics simulation: spawn squared circles at the top, let gravity
+    // pull them down with a slow tumble, remove them when they fall off.
+    (function () {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      function readInk() {
+        var v = getComputedStyle(document.documentElement).getPropertyValue('--ink');
+        return (v && v.trim()) || '#0e0e10';
+      }
+      var inkColor = readInk();
+      if ('MutationObserver' in window) {
+        new MutationObserver(function () { inkColor = readInk(); })
+          .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      }
+
+      function drawSquaredCircle(ctx, x, y, size, rot, alpha) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = inkColor;
+        ctx.fillStyle   = inkColor;
+        ctx.lineWidth   = 1;
+
+        var r = size / 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, -r * 0.95);
+        ctx.lineTo(r * 0.82,  r * 0.475);
+        ctx.lineTo(-r * 0.82, r * 0.475);
+        ctx.closePath();
+        ctx.stroke();
+        var sq = r * 0.67;
+        ctx.strokeRect(-sq / 2, -sq / 2, sq, sq);
+        // inner filled stone
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.20, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function startCanvas(host) {
+        var canvas = host.querySelector('canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var items = [];
+        var raf = 0;
+        var spawnAccumulator = 0;
+
+        var GRAVITY        = 0.06;   // px / frame² acceleration downward
+        var SPAWN_PER_SEC  = 1.6;    // average new items per second across all lanes
+        var MAX_ITEMS      = 40;     // soft cap (raised for multi-stream)
+        var MIN_SIZE       = 12;
+        var MAX_SIZE       = 26;
+        var BOUNCE_DAMP    = 0.55;   // energy retained per bounce (0 = dead, 1 = elastic)
+        var SETTLE_VY      = 0.6;    // |vy| below this on bounce → consider settled
+        var SETTLE_HOLD_MS = 700;    // hold settled items briefly before fading
+        var FADE_PER_FRAME = 0.012;  // alpha removed per frame after the hold
+
+        var LANE_FRACS = [0.20, 0.50, 0.80];
+
+        function resize() {
+          var dpr = window.devicePixelRatio || 1;
+          var w = canvas.clientWidth, h = canvas.clientHeight;
+          canvas.width  = Math.max(1, Math.floor(w * dpr));
+          canvas.height = Math.max(1, Math.floor(h * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function spawn() {
+          var w = canvas.clientWidth;
+          var laneX = LANE_FRACS[Math.floor(Math.random() * LANE_FRACS.length)] * w;
+          var size  = MIN_SIZE + Math.random() * (MAX_SIZE - MIN_SIZE);
+          return {
+            x:    laneX + (Math.random() - 0.5) * 14,   // slight jitter within lane
+            y:    -size,
+            vy:   Math.random() * 0.4,
+            rot:  Math.random() * Math.PI * 2,
+            vRot: (Math.random() - 0.5) * 0.035,
+            size: size,
+            alpha: 0.10 + Math.random() * 0.22,
+            settled:    false,
+            settleTimer: 0,
+          };
+        }
+
+        var lastTime = performance.now();
+        function frame(now) {
+          var dt = Math.min(50, now - lastTime); // clamp on tab-switch
+          lastTime = now;
+          var dtFrames = dt / (1000 / 60);       // normalize to 60-fps frames
+
+          spawnAccumulator += (SPAWN_PER_SEC * dt) / 1000;
+          while (spawnAccumulator >= 1 && items.length < MAX_ITEMS) {
+            items.push(spawn());
+            spawnAccumulator -= 1;
+          }
+          if (spawnAccumulator > 1) spawnAccumulator = 1;
+
+          var w = canvas.clientWidth, h = canvas.clientHeight;
+          ctx.clearRect(0, 0, w, h);
+
+          for (var i = items.length - 1; i >= 0; i--) {
+            var it = items[i];
+
+            if (!it.settled) {
+              it.vy  += GRAVITY * dtFrames;
+              it.y   += it.vy   * dtFrames;
+              it.rot += it.vRot * dtFrames;
+
+              // Bounce off the floor
+              var floorY = h - it.size * 0.5;
+              if (it.y >= floorY && it.vy > 0) {
+                it.y = floorY;
+                it.vy = -it.vy * BOUNCE_DAMP;
+                it.vRot *= 0.7;             // tumble slows on impact
+                if (Math.abs(it.vy) < SETTLE_VY) {
+                  it.vy = 0;
+                  it.vRot *= 0.2;
+                  it.settled = true;
+                }
+              }
+            } else {
+              // Settled at the floor — slow rotation to a halt, hold, then fade out.
+              it.rot += it.vRot * dtFrames;
+              it.vRot *= 0.92;
+              it.settleTimer += dt;
+              if (it.settleTimer > SETTLE_HOLD_MS) {
+                it.alpha -= FADE_PER_FRAME * dtFrames;
+                if (it.alpha <= 0) {
+                  items.splice(i, 1);
+                  continue;
+                }
+              }
+            }
+
+            drawSquaredCircle(ctx, it.x, it.y, it.size, it.rot, it.alpha);
+          }
+
+          raf = requestAnimationFrame(frame);
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        raf = requestAnimationFrame(frame);
+      }
+
+      document.querySelectorAll('.physics-side').forEach(startCanvas);
+    })();
+  </script>
+
   <div id="scrollmark"></div>
   <script>
     (function () {
@@ -279,7 +541,22 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <a class="back" href="index.html">← back</a>
     <article>
       <header class="post-header">
-        <h1 class="post-title" id="title">Loading…</h1>
+        <div class="post-title-row">
+          <h1 class="post-title" id="title">Loading…</h1>
+          <!-- Music toggle. Drop your audio file at uploads/theme.mp3 (or change the src below). -->
+          <button id="music-btn" type="button" aria-label="Play music" title="Toggle music">
+            <svg class="icon-play"  viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M9 17V5l11-2v12"/>
+              <circle cx="6"  cy="17" r="3"/>
+              <circle cx="17" cy="15" r="3"/>
+            </svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="6"  y="4" width="4" height="16" rx="1"/>
+              <rect x="14" y="4" width="4" height="16" rx="1"/>
+            </svg>
+          </button>
+          <audio id="music-audio" src="uploads/theme.mp3" loop preload="none"></audio>
+        </div>
         <time class="post-date" id="date"></time>
       </header>
       <div id="body"></div>
