@@ -63,12 +63,11 @@
   }
   #root { position: relative; z-index: 1; min-height: 100vh; }
 
-  /* Hide native scrollbars on every scrollable element (page + inner boxes
-     like the Blog list). The custom #scrollmark replaces the page one. */
+  /* Hide native scrollbars on every scrollable element  */
   * { scrollbar-width: none; -ms-overflow-style: none; }
   ::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
-  /* Custom scroll marker — thin floating thumb, auto-hides when idle. */
+  /* Custom scroll marker */
   #scrollmark {
     position: fixed;
     top: 0;
@@ -87,8 +86,7 @@
     transition: opacity 0.12s ease, background 0.25s ease;
   }
 
-  /* Custom pen-nib cursor (SVG, hotspot at the tip).
-     The paper-colored outline keeps it visible in either theme. */
+  /* Custom pen-nib cursor (SVG, hotspot at the tip). */
   body {
     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M 2 2 L 18 12 L 12 18 Z' fill='%230e0e10' stroke='%23fdfcf8' stroke-width='0.8' stroke-linejoin='round'/><line x1='4' y1='4' x2='14' y2='14' stroke='%23fdfcf8' stroke-width='0.5' opacity='0.8'/></svg>") 2 2, auto;
   }
@@ -99,9 +97,7 @@
 
   /* Quote flanking images — they have white backgrounds.
      Light mode: multiply blend makes the white blend into the cream paper.
-     Dark mode: invert flips white→black and icon dark→light, then `lighten`
-     swaps the now-black image bg for whatever the actual page bg is — so
-     the image's bg matches the page exactly, no visible seam. */
+     Dark mode: invert flips white→black and icon dark→light, then `lighten` */
   .quote-flank { mix-blend-mode: multiply; transition: filter 0.25s ease; }
   :root[data-theme="dark"] .quote-flank {
     mix-blend-mode: lighten;

@@ -33,7 +33,7 @@ const CONTENT = {
     `Reading: There will be a scientific theory of deep learning.`,
     `Coding: some scripts for our paper`,
     `Taking: CSE30, CSE100R, CSE101, and CSE151A. `,
-    `*P.S. Scroll all the way down!*`,
+    `**P.S. Scroll all the way down!**`,
   ],
 
   funFacts: [
