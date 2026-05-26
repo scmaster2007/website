@@ -19,6 +19,9 @@
   const VOID = [8, 6, 5];
   const LUM  = [250, 250, 246]; 
   const INK_DARK = [20, 19, 22];
+  const EMBLEM_CENTER = 200;
+  const EMBLEM_DOT_CY = 215;
+  const EMBLEM_SIZE_VMIN = 76;
 
   const hexToRgb = (h) => {
     if (typeof h !== 'string') return null;
@@ -91,10 +94,12 @@
            strokeLinejoin="round">
           <circle cx="200" cy="200" r="190" />
           <polygon points="200,10 364.5,295 35.5,295" />
-          <rect x="133" y="133" width="134" height="134" />
-          <circle cx="200" cy="200" r="67" />
+          {/* inner circle = triangle's incircle (tangent to all 3 triangle sides) */}
+          <circle cx="200" cy="215" r="70" />
+          {/* small square floating in the center, touching nothing */}
+          <rect x="130" y="145" width="140" height="140" />
         </g>
-        <circle cx="200" cy="200" r="2.6" fill="currentColor" />
+        <circle cx="200" cy={EMBLEM_DOT_CY} r="2.6" fill="currentColor" />
       </svg>
     );
   });
@@ -281,6 +286,8 @@
     const destHex = isDark ? '#fafaf6' : '#070605';
     const vignetteColor = isDark ? 'rgba(250,250,246,0.85)' : 'rgba(0,0,0,0.85)';
     const sectionRef = React.useRef(null);
+    const progressRef = React.useRef(0);
+    const targetProgressRef = React.useRef(0);
     const [progress, setProgress] = React.useState(0);
     const [reduced, setReduced] = React.useState(false);
 
@@ -295,34 +302,53 @@
     React.useEffect(function () {
       if (reduced) return undefined;
       let raf = 0;
-      const onScroll = function () {
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(function () {
-          const el = sectionRef.current;
-          if (!el) return;
-          const rect = el.getBoundingClientRect();
-          const travel = rect.height - window.innerHeight;
-          setProgress(travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0);
-        });
+      let initialized = false;
+
+      const measureProgress = function () {
+        const el = sectionRef.current;
+        if (!el) return 0;
+        const rect = el.getBoundingClientRect();
+        const travel = rect.height - window.innerHeight;
+        return travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0;
       };
-      onScroll();
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll);
+
+      const step = function () {
+        const current = progressRef.current;
+        const target = targetProgressRef.current;
+        const next = Math.abs(target - current) < 0.0004
+          ? target
+          : lerp(current, target, 0.18);
+
+        progressRef.current = next;
+        setProgress(next);
+
+        if (next !== target) {
+          raf = requestAnimationFrame(step);
+        } else {
+          raf = 0;
+        }
+      };
+
+      const updateTarget = function () {
+        targetProgressRef.current = measureProgress();
+        if (!initialized) {
+          initialized = true;
+          progressRef.current = targetProgressRef.current;
+          setProgress(targetProgressRef.current);
+          return;
+        }
+        if (!raf) raf = requestAnimationFrame(step);
+      };
+
+      updateTarget();
+      window.addEventListener('scroll', updateTarget, { passive: true });
+      window.addEventListener('resize', updateTarget);
       return function () {
         cancelAnimationFrame(raf);
-        window.removeEventListener('scroll', onScroll);
-        window.removeEventListener('resize', onScroll);
+        window.removeEventListener('scroll', updateTarget);
+        window.removeEventListener('resize', updateTarget);
       };
     }, [reduced]);
-
-   
-    React.useEffect(function () {
-      if (reduced) return undefined;
-      const dest = isDark ? LUM : VOID;
-      document.body.style.background = lerpColor(
-        startBg, dest, track(progress, 0.24, 0.58)
-      );
-    }, [progress, startBg, isDark, reduced]);
 
     // Reduced motion: a calm, static stacked version — no scroll-jacking.
     if (reduced) {
@@ -347,6 +373,10 @@
     // 0–0.20: the emblem just sits there (hold).
     // 0.20–0.62: it zooms, eased so the onset is gentle rather than abrupt.
     const emblemScale = lerp(1, 12, easeIn(track(progress, 0.20, 0.62)));
+    const emblemDotOffsetVmin = ((EMBLEM_DOT_CY - EMBLEM_CENTER) / 400) * EMBLEM_SIZE_VMIN;
+    // The dot sits lower in the resting emblem; counter that offset during zoom
+    // so the enlarged dot still cross-fades into the centered stone.
+    const emblemDotCompensation = emblemDotOffsetVmin * emblemScale * easeOut(track(progress, 0.22, 0.48));
     const emblemOpacity = 1 - track(progress, 0.48, 0.66);
     const emblemColor = lerpColor(startInk, [212, 175, 90], track(progress, 0.20, 0.50));
     const bg = lerpColor(startBg, destRGB, track(progress, 0.24, 0.58));
@@ -369,14 +399,27 @@
           {/* zooming emblem */}
           <div style={{
             position: 'absolute', left: '50%', top: '50%',
-            width: '76vmin', height: '76vmin',
+            width: EMBLEM_SIZE_VMIN + 'vmin', height: EMBLEM_SIZE_VMIN + 'vmin',
             color: emblemColor,
             opacity: emblemOpacity,
-            transform: 'translate(-50%, -50%) scale(' + emblemScale + ')',
-            willChange: 'transform, opacity',
+            transform: 'translate(-50%, -50%)',
+            willChange: 'opacity',
             pointerEvents: 'none',
           }}>
-            <StoneEmblem />
+            <div style={{
+              width: '100%', height: '100%',
+              transform: 'translateY(-' + emblemDotCompensation + 'vmin)',
+              willChange: 'transform',
+            }}>
+              <div style={{
+                width: '100%', height: '100%',
+                transform: 'scale(' + emblemScale + ')',
+                transformOrigin: 'center center',
+                willChange: 'transform',
+              }}>
+                <StoneEmblem />
+              </div>
+            </div>
           </div>
 
           {/* faint rain of ancient hebrew letters. */}
@@ -411,7 +454,7 @@
             pointerEvents: 'none',
           }} />
 
-          {/* the stone + tree + final quote */}
+          {/* the stone + tree */}
           <div style={{
             position: 'absolute', left: '50%', top: '50%',
             opacity: stoneOpacity,
@@ -420,13 +463,19 @@
             display: 'flex', flexDirection: 'column', alignItems: 'center',
           }}>
             <StoneGem />
-            <div style={{
-              marginTop: 40,
-              opacity: quoteOpacity,
-              transform: 'translateY(' + quoteShift + 'px)',
-            }}>
-              <FinalQuote isDark={isDark} />
-            </div>
+          </div>
+
+          {/* final quote */}
+          <div style={{
+            position: 'absolute', left: '50%',
+            top: 'calc(50% + min(37vmin, 186px) + 40px)',
+            width: 'min(92vw, 520px)',
+            opacity: quoteOpacity,
+            transform: 'translate(-50%, ' + quoteShift + 'px)',
+            willChange: 'transform, opacity',
+            pointerEvents: 'none',
+          }}>
+            <FinalQuote isDark={isDark} />
           </div>
         </div>
       </section>
