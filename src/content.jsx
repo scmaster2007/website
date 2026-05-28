@@ -27,11 +27,17 @@ const CONTENT = {
       venue: '',
       links: [],
     },
+    {
+      authors: 'S. Cho*',
+      title: 'In preparation',
+      venue: '',
+      links: [],
+    },
   ],
 
   now: [
     `Reading: There will be a scientific theory of deep learning.`,
-    `Coding: some scripts for our paper`,
+    `Working: on my papers!`,
     `Taking: CSE30, CSE100R, CSE101, and CSE151A. `,
     `**P.S. Scroll all the way down!**`,
   ],
@@ -45,8 +51,8 @@ const CONTENT = {
 
 
   blog: [
-	
-    { date: '2026-05-25', title: 'agi and labor', slug: 'agiandlabor'},
+	{ date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes'},
+    { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor'},
   { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts' }, 
   { date: '2026-05-06', title: 'test',
       slug: '260506test1', locked: true},
