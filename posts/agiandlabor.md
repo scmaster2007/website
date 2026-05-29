@@ -21,6 +21,6 @@ The process to create a commodity from money is $M-C-M'$. The 1st stage, $M$, de
 
 How can the commodity have sold for an increased price? After all, if this pipeline is as watertight as it sounds, then how could the extra $P = M' - M$ (profit) be anything but zero?
 
-Here I can attempt to give an unfaithful representation of Marx's idea on **surplus value** (it's been a while). If we take the LTV to be true at face value, then the longer a proletarian works, the more "labor time" is put into the commodity, thus directly influencing its "value". So the ultimate meaning for a capitalist should be to enlarge this value as much as possible: either through direct or indirect means. The goal for a proletarian, on the other hand, is to sell his labor power to the capitalist and receive wages that will directly sustain him and the people around him.
+Here I can attempt to give an unfaithful representation of Marx's idea on **surplus value** (it's been a while). If we take the LTV to be true at face value, then the longer a proletarian works, the more "labor time" is put into the commodity, thus directly influencing its "value". So the ultimate purpose for a capitalist should be to enlarge this value as much as possible: either through direct or indirect means. The goal for a proletarian, on the other hand, is to sell his labor power to the capitalist and receive wages that will directly sustain him and the people around him. This, Marx argues, is a fundamentally unequal relation
 
 [WIP]

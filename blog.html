@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writings</title>
+<script>
+  (function () {
+    var t = 'light';
+    try {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || saved === 'light') t = saved;
+    } catch (e) {}
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1814;
+    --paper: #fdfcf8;
+    --selection: rgba(0, 0, 0, 0.12);
+    --thumb: rgba(14, 14, 16, 0.10);
+  }
+  :root[data-theme="dark"] {
+    --ink: #e8e6df;
+    --paper: #0e0e10;
+    --selection: rgba(255, 255, 255, 0.14);
+    --thumb: rgba(232, 230, 223, 0.10);
+  }
+
+  html, body { margin: 0; padding: 0; overscroll-behavior-y: none; }
+  body {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--selection); }
+
+  /* paper texture, same as index */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  #root { position: relative; z-index: 1; min-height: 100vh; }
+
+  /* Hide native scrollbars; custom marker handles feedback. */
+  * { scrollbar-width: none; -ms-overflow-style: none; }
+  ::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+  #scrollmark {
+    position: fixed;
+    top: 0;
+    right: 8px;
+    width: 2px;
+    height: 40px;
+    background: var(--thumb);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.5s ease, background 0.25s ease;
+  }
+  #scrollmark.active {
+    opacity: 1;
+    transition: opacity 0.12s ease, background 0.25s ease;
+  }
+
+  /* pen-nib cursor, both themes */
+  body {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M 2 2 L 18 12 L 12 18 Z' fill='%230e0e10' stroke='%23fdfcf8' stroke-width='0.8' stroke-linejoin='round'/><line x1='4' y1='4' x2='14' y2='14' stroke='%23fdfcf8' stroke-width='0.5' opacity='0.8'/></svg>") 2 2, auto;
+  }
+  :root[data-theme="dark"] body {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M 2 2 L 18 12 L 12 18 Z' fill='%23e8e6df' stroke='%230e0e10' stroke-width='0.8' stroke-linejoin='round'/><line x1='4' y1='4' x2='14' y2='14' stroke='%230e0e10' stroke-width='0.5' opacity='0.8'/></svg>") 2 2, auto;
+  }
+  input, textarea, [contenteditable] { cursor: text; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="scrollmark"></div>
+
+<script>
+  // Floating scroll marker — driven by scroll position. No native scrollbar.
+  (function () {
+    var mark = document.getElementById('scrollmark');
+    if (!mark) return;
+    var minH = 32;
+    var hideTimer = null;
+    function place() {
+      var docH = document.documentElement.scrollHeight;
+      var viewH = window.innerHeight;
+      var scrollable = docH - viewH;
+      if (scrollable <= 1) { mark.style.display = 'none'; return; }
+      mark.style.display = '';
+      var h = Math.max(minH, Math.round(viewH * (viewH / docH)));
+      var maxTop = viewH - h - 4;
+      var top = (window.scrollY / scrollable) * maxTop + 2;
+      mark.style.height = h + 'px';
+      mark.style.top = top + 'px';
+    }
+    function ping() {
+      place();
+      mark.classList.add('active');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function () { mark.classList.remove('active'); }, 900);
+    }
+    ping();
+    window.addEventListener('scroll', ping, { passive: true });
+    window.addEventListener('resize', ping);
+    if ('MutationObserver' in window) {
+      new MutationObserver(place).observe(document.body, { childList: true, subtree: true });
+    }
+  })();
+</script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="src/content.jsx"></script>
+<script type="text/babel" src="src/editable.jsx"></script>
+<script type="text/babel" src="src/section.jsx"></script>
+<script type="text/babel" src="src/sections.jsx"></script>
+
+<script type="text/babel">
+  // Standalone categorized blog index. Reuses window.Section and
+  // window.BlogPostList so the look matches the homepage exactly.
+
+  const SunIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+      <circle cx="12" cy="12" r="4"/>
+      <line x1="12" y1="3"  x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="21"/>
+      <line x1="3"  y1="12" x2="6"  y2="12"/><line x1="18" y1="12" x2="21" y2="12"/>
+      <line x1="5.6"  y1="5.6"  x2="7.8"  y2="7.8"/><line x1="16.2" y1="16.2" x2="18.4" y2="18.4"/>
+      <line x1="5.6"  y1="18.4" x2="7.8"  y2="16.2"/><line x1="16.2" y1="7.8"  x2="18.4" y2="5.6"/>
+    </svg>
+  );
+  const MoonIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M 21 12.8 A 9 9 0 1 1 11.2 3 a 7 7 0 0 0 9.8 9.8 Z"/>
+    </svg>
+  );
+
+  const iconBtnStyle = (ink, paper) => ({
+    width: 36, height: 36, padding: 0,
+    borderRadius: '50%',
+    border: `1px solid ${ink}30`,
+    background: paper,
+    color: ink,
+    cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
+    textDecoration: 'none',
+  });
+
+  const BlogApp = () => {
+    const [isDark, setIsDark] = React.useState(
+      () => document.documentElement.dataset.theme === 'dark'
+    );
+
+    const toggleTheme = () => {
+      setIsDark(prev => {
+        const next = !prev;
+        const theme = next ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+        try { localStorage.setItem('theme', theme); } catch (e) {}
+        return next;
+      });
+    };
+
+    const ink   = isDark ? '#e8e6df' : '#1a1814';
+    const paper = isDark ? '#0e0e10' : '#fdfcf8';
+    const accent = isDark ? '#8ab4f8' : 'oklch(0.45 0.18 255)';
+
+    const C = window.CONTENT || {};
+    const cats = (C.blogCategories && C.blogCategories.length)
+      ? C.blogCategories : ['Notes'];
+    const posts = C.blog || [];
+
+    const grouped = {};
+    cats.forEach(c => { grouped[c] = []; });
+    posts.forEach(p => {
+      const c = cats.indexOf(p.category) !== -1 ? p.category : cats[0];
+      grouped[c].push(p);
+    });
+    Object.keys(grouped).forEach(c =>
+      grouped[c].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
+    );
+
+    const linkStyle = {
+      color: accent,
+      textDecoration: 'underline',
+      textDecorationThickness: '0.5px',
+      textUnderlineOffset: '2px',
+    };
+
+    return (
+      <div style={{ minHeight: '100vh', color: ink }}>
+        {/* top-right controls */}
+        <div style={{
+          position: 'fixed', top: 14, right: 14, zIndex: 100,
+          display: 'flex', gap: 8,
+        }}>
+          {C.github && (
+            <a href={C.github} target="_blank" rel="noreferrer"
+               aria-label="GitHub" title="GitHub" style={iconBtnStyle(ink, paper)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.78-.25.78-.55v-2c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18.92-.26 1.9-.39 2.88-.39.98 0 1.96.13 2.88.39 2.19-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.13v3.16c0 .31.21.66.79.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+              </svg>
+            </a>
+          )}
+          <button onClick={toggleTheme}
+                  aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                  title={isDark ? 'switch to light' : 'switch to dark'}
+                  style={iconBtnStyle(ink, paper)}>
+            {isDark ? <SunIcon /> : <MoonIcon />}
+          </button>
+        </div>
+
+        <div style={{ maxWidth: 1000, margin: '0 auto', padding: '36px 22px 80px' }}>
+          {/* header */}
+          <div style={{ marginBottom: 26 }}>
+            <a href="index.html" style={{ ...linkStyle, fontSize: '0.95em', opacity: 0.8 }}>
+              ← back
+            </a>
+            <div style={{
+              textAlign: 'center',
+              fontStyle: 'italic',
+              fontSize: '1.5em',
+              marginTop: 22,
+            }}>
+              — Writing —
+            </div>
+            <div style={{
+              textAlign: 'center',
+              fontSize: '0.9em',
+              color: ink + '99',
+              marginTop: 6,
+            }}>
+              {posts.length} {posts.length === 1 ? 'post' : 'posts'}, sorted into
+              6 categories.
+            </div>
+          </div>
+
+          {/* category grid — boxy, like the homepage */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: 18,
+            alignItems: 'start',
+          }}>
+            {cats.map(cat => (
+              <window.Section
+                key={cat}
+                title={cat}
+                boxStyle="framed"
+                accent={accent}
+                ink={ink}
+                paper={paper}
+              >
+                <window.BlogPostList
+                  items={grouped[cat]}
+                  accent={accent}
+                  ink={ink}
+                  emptyText="Nothing here yet."
+                />
+              </window.Section>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const rootElement = document.getElementById('root');
+  if (rootElement) {
+    ReactDOM.createRoot(rootElement).render(<BlogApp />);
+  }
+</script>
+</body>
+</html>

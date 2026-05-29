@@ -122,20 +122,16 @@ const LockIcon = ({ ink }) => (
   </svg>
 );
 
-const Blog = ({ accent, ink }) => {
-  const items = window.CONTENT.blog || [];
-
-  if (items.length === 0) {
+// Shared post-list renderer — used by the homepage Blog box and blog.html.
+const BlogPostList = ({ items, accent, ink, emptyText = 'No posts yet.' }) => {
+  if (!items || items.length === 0) {
     return (
-      <div style={{ fontSize: '0.92em', color: ink + 'a0' }}>No posts yet.</div>
+      <div style={{ fontSize: '0.92em', color: ink + 'a0' }}>{emptyText}</div>
     );
   }
 
   return (
-    <ul style={{
-      margin: 0,
-      paddingLeft: '1.1em',
-    }}>
+    <ul style={{ margin: 0, paddingLeft: '1.1em' }}>
       {items.map((post, i) => {
         const isLocked = !!post.locked;
         const titleNode = <em><window.Editable value={post.title} /></em>;
@@ -192,6 +188,35 @@ const Blog = ({ accent, ink }) => {
     </ul>
   );
 };
+
+const Blog = ({ accent, ink }) => {
+  const items = window.CONTENT.blog || [];
+  return <BlogPostList items={items} accent={accent} ink={ink} />;
+};
+
+// "see all →" link — passed to <Section footer> so it stays pinned below the
+// scrollable post list rather than scrolling away with it.
+const BlogSeeAll = ({ accent, ink }) => (
+  <div style={{
+    marginTop: 10,
+    paddingTop: 8,
+    borderTop: `1px dashed ${ink}25`,
+    textAlign: 'right',
+    fontSize: '0.88em',
+  }}>
+    <a
+      href="blog.html"
+      style={{
+        color: accent,
+        textDecoration: 'underline',
+        textDecorationThickness: '0.5px',
+        textUnderlineOffset: '2px',
+      }}
+    >
+      see all →
+    </a>
+  </div>
+);
 
 
 // Contact
@@ -314,4 +339,4 @@ const Quote = ({ accent, ink }) => {
   );
 };
 
-Object.assign(window, { About, Now, Research, FunFacts, Blog, Quote, Contact, Identity, A });
+Object.assign(window, { About, Now, Research, FunFacts, Blog, BlogPostList, BlogSeeAll, LockIcon, Quote, Contact, Identity, A });

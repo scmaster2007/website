@@ -50,14 +50,22 @@ const CONTENT = {
   ],
 
 
+  // Categories for the full blog page (blog.html).
+  blogCategories: ['Notes', 'Theories', 'Philosophy', 'Science', 'Updates', 'Personal'],
+
   blog: [
-	{ date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes'},
-    { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor'},
-  { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts' }, 
-  { date: '2026-05-06', title: 'test',
-      slug: '260506test1', locked: true},
-  { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome' },
-  ],
+	{ date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes', category: 'Notes'},
+
+  { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor', category: 'Philosophy'},
+
+  { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts', category: 'Updates' },
+
+  { date: '2026-05-06', title: 'test', slug: '260506test1', locked: true, category: 'Personal'},
+
+  { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome', category: 'Updates' },
+
+  
+],
 
   quote: {
     text: 'Everything in the world depends on desire',

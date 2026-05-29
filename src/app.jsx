@@ -145,7 +145,7 @@ const App = () => {
     document.body.style.fontSize = state.fontSize + 'px';
   }, [paper.paper, ink, font.stack, state.fontSize]);
 
-  const { Section, About, Now, Research, FunFacts, Blog, Quote, Contact, Identity, Portrait, PhilosophersStone } = window;
+  const { Section, About, Now, Research, FunFacts, Blog, BlogSeeAll, Quote, Contact, Identity, Portrait, PhilosophersStone } = window;
 
   // Contact Card
   const IdentityCard = () => (
@@ -206,7 +206,8 @@ const App = () => {
       <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
         <FunFacts accent={accentValue} ink={ink} />
       </Section>
-      <Section title="Blog" grow scroll boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+      <Section title="Blog" grow scroll boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}
+        footer={<BlogSeeAll accent={accentValue} ink={ink} />}>
         <Blog accent={accentValue} ink={ink} />
       </Section>
     </div>
@@ -250,7 +251,8 @@ const App = () => {
             <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
               <FunFacts accent={accentValue} ink={ink} />
             </Section>
-            <Section title="Blog" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+            <Section title="Blog" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}
+              footer={<BlogSeeAll accent={accentValue} ink={ink} />}>
               <Blog accent={accentValue} ink={ink} />
             </Section>
             <Section title="Now" grow boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
@@ -286,7 +288,8 @@ const App = () => {
         <Section title="Fun Facts" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
           <FunFacts accent={accentValue} ink={ink} />
         </Section>
-        <Section title="Blog" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>
+        <Section title="Blog" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}
+          footer={<BlogSeeAll accent={accentValue} ink={ink} />}>
           <Blog accent={accentValue} ink={ink} />
         </Section>
         <Section title="Contact" boxStyle={state.boxStyle} accent={accentValue} ink={ink} paper={paper.paper}>

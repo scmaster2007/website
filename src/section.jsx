@@ -107,7 +107,7 @@ const SectionHeader = ({ title, boxStyle, accent, ink, mono, collapsed, onToggle
   );
 };
 
-const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = true, grow = false, scroll = false }) => {
+const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = true, grow = false, scroll = false, footer = null }) => {
   const [collapsed, setCollapsed] = React.useState(false);
   const contentRef = React.useRef(null);
   const [contentHeight, setContentHeight] = React.useState(0);
@@ -188,6 +188,7 @@ const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = 
         }}>
           {children}
         </div>
+        {footer}
       </div>
     );
   }
@@ -214,6 +215,7 @@ const Section = ({ title, children, boxStyle, accent, ink, paper, collapsible = 
       >
         <div ref={contentRef}>{children}</div>
       </div>
+      {footer}
     </div>
   );
 };
