@@ -5,11 +5,13 @@ date: 05-27-26
 
 # Chapter 2:
 
-States that the Physiocrats were the first ones to derive the proof that the alienation of labor and labour power creates surplus value, and identify specific material components where capital persists.
+The author starts with his study on the Physiocrats and their analysis on the idea of surplus value.
 
-They however failed to consider the social/historical conditions that engendered the creation of specific components and unnecessarily restricted the study. These conditions may or may not be aligned with the general historical movement of the time: it makes/needs no proise.
+The author notes that the Physiocrats were the first ones to derive the truth that both the alienation of labor and the using of labour power creates surplus value, and identify specific material instances where capital can exist and persist.
 
-Capital has various forms, and the Physiocrats aptly described capitalism as a process that fully understands labor power as being a tradable, sellable commodity, and that if the laborer were to only provide to the capitalists the exact amount of labor needed to pay off his sustenance, then there would exist no surplus value.
+They however failed to consider the social/historical conditions that engendered the creation of these specific circumstances and unnecessarily restricted their study by not mentioning them. These conditions may or may not be aligned with the general historical movement of the time: in other words, they need not be justified.
+
+Capital has various forms, and the Physiocrats aptly described capitalism as a process that fully acknowledges labor power as being a tradable, sellable commodity. They also describe that if the laborer were to only exert their labour power to capitalists using exact amount of labor needed to pay off his sustenance, then there would exist no surplus value, no additive being made.
 
 Physiocrats love agriculture and view it as the only environment where "surplus" can be created (for example, the average farmer consumes far less than what he produces in a year). In regular industry they argue that this relation is more elusive and thus harder to study due to the process of transaction as well as the influence from the global market.. debates about usury being a form of true surplus value or not (and they did correctly identify labor turned into surplus presupposes that this labor is productive labor).
 
