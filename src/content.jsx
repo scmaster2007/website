@@ -56,7 +56,7 @@ const CONTENT = {
   blog: [
 	{ date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes', category: 'Notes'},
 
-  { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor', category: 'Philosophy'},
+  { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor', category: 'Theories'},
 
   { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts', category: 'Updates' },
 
