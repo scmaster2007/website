@@ -54,7 +54,9 @@ const CONTENT = {
   blogCategories: ['Notes', 'Theories', 'Philosophy', 'Science', 'Updates', 'Personal'],
 
   blog: [
-	{ date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes', category: 'Notes'},
+	{ date: '2026-06-03', title: 'Neural Tangent Kernels', slug: 'NTKNotes', category: 'Science'},
+  
+    { date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes', category: 'Notes'},
 
   { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor', category: 'Theories'},
 

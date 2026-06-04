@@ -1,17 +1,16 @@
 ---
 title: Theories of Surplus Value Part I Notes
+
 date: 05-27-26
 ---
 
 # Chapter 2:
 
-The author starts with his study on the Physiocrats and their analysis on the idea of surplus value.
+States that the Physiocrats were the first ones to derive the proof that the alienation of labor and labour power creates surplus value, and identify specific material components where capital persists.
 
-The author notes that the Physiocrats were the first ones to derive the truth that both the alienation of labor and the using of labour power creates surplus value, and identify specific material instances where capital can exist and persist.
+They however failed to consider the social/historical conditions that engendered the creation of specific components and unnecessarily restricted the study. These conditions may or may not be aligned with the general historical movement of the time: it makes/needs no proise.
 
-They however failed to consider the social/historical conditions that engendered the creation of these specific circumstances and unnecessarily restricted their study by not mentioning them. These conditions may or may not be aligned with the general historical movement of the time: in other words, they need not be justified.
-
-Capital has various forms, and the Physiocrats aptly described capitalism as a process that fully acknowledges labor power as being a tradable, sellable commodity. They also describe that if the laborer were to only exert their labour power to capitalists using exact amount of labor needed to pay off his sustenance, then there would exist no surplus value, no additive being made.
+Capital has various forms, and the Physiocrats aptly described capitalism as a process that fully understands labor power as being a tradable, sellable commodity, and that if the laborer were to only provide to the capitalists the exact amount of labor needed to pay off his sustenance, then there would exist no surplus value.
 
 Physiocrats love agriculture and view it as the only environment where "surplus" can be created (for example, the average farmer consumes far less than what he produces in a year). In regular industry they argue that this relation is more elusive and thus harder to study due to the process of transaction as well as the influence from the global market.. debates about usury being a form of true surplus value or not (and they did correctly identify labor turned into surplus presupposes that this labor is productive labor).
 
@@ -35,7 +34,12 @@ Smith makes mistakes whilst determining the value of a commodity. Instead of equ
 
 A little thought experiment. Assume a worker can make commodities and also trade them for other commodities, and assume that LTV is true, in other words:
 
-$$ M - C - M' \equiv C - C' $$
+$$
+
+M - C - M' \equiv C - C'
+
+
+$$
 
 then say that we create a commodity and imbue it with 12 hours of labor time and trade a commodity with our commodity that also took 12 hour labor time. Then we have simply exchanged the same exact amount of use value, so no surplus value was generated, thus this relationship is injective if equal amounts and so we are able to take the same amount of living labor and mold it into hardened, material labor I.E. living labor ought to possess command of material labor, but not the other way around. But curiously this exact contradiction happens in the real market.
 
@@ -97,4 +101,6 @@ One of capitalism's contradictions then, is its handling of coagulated labor tim
 
 # CHPT 5:
 
-[WIP]
+The author generally agrees with Necker's conclusion about the development of productive forces and their relation to the average laboring hours of a workforce. More specifically, Necker demonstrates that as machinery, tools used to embed labor time in a commodity get increasingly advanced/efficient, the OVERALL hours of laboring stay the same: what only changes is the ratio between the time it takes to reproduce the wage that the proletarian is given (this takes less time) and how much of that time is put to use in the creation surplus value (more of that same time is devoted to this). (This general idea is further formalized in the author's later works, it's called **relative surplus value**).
+
+We can directly observe this phenomena by analyzing the time of
