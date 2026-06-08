@@ -9,7 +9,7 @@ Q: "At initialization, artificial neural networks (ANNs) are equivalent to Gauss
 
 A: A kernel function, for some $k(x,x')$ can measure the similarity between two inputs $x,x'$ in a high dimensional function space. For perceptrons it works as the way I described above because a kernel function as defined by the perceptron algorithm is given as $k(x,x') = \phi(x) * \phi (x')$, with $*$ being the dot product (calculates angle between the two lines, effectively measuring "similarity"). For Gaussian processes, it is unlike the general multiclass gaussian classification where we pick from some highest probability distribution given a point, but rather it models the likelihood of certain functions being mapped to a certain data distribution.
 
-For example, say we have some points and we wish to find out the function that best describes the patterns, movements of these points to predict future points. The Gaussian Process will give us a distribution of functions, and we simply have to pick the function with the highest probability at that given time: the shape of this best function is given by the kernel, or $k(x,x')$$.
+For example, say we have some points and we wish to find out the function that best describes the patterns, movements of these points to predict future points. The Gaussian Process will give us a distribution of functions, and we simply have to pick the function with the highest probability at that given time: the shape of this best function is given by the kernel, or $k(x,x')$.
 
 Q: " While the NTK is random at initialization and **varies during training**, in the infinite-width limit it converges to an explicit limiting kernel and it **stays constant during training.**" -> isn't this a contradiction
 
