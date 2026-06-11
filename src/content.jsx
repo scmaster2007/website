@@ -54,7 +54,7 @@ const CONTENT = {
   blogCategories: ['Notes', 'Theories', 'Philosophy', 'Science', 'Updates', 'Personal'],
 
   blog: [
-	{ date: '2026-06-03', title: 'Neural Tangent Kernels', slug: 'NTKNotes', category: 'Science'},
+	{ date: '2026-06-10', title: 'A Proof Regarding the Necessity of TzimTzum', slug: 'einsof', category: 'Philosophy'},
   
     { date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes', category: 'Notes'},
 
