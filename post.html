@@ -23,6 +23,7 @@
 <style>
   /* Theme  */
   :root {
+    color-scheme: light;
     --ink: #0e0e10;
     --paper: #fdfcf8;
     --muted: rgba(0, 0, 0, 0.6);
@@ -36,6 +37,7 @@
     --thumb-hover: rgba(14, 14, 16, 0.3);
   }
   :root[data-theme="dark"] {
+    color-scheme: dark;
     --ink: #e8e6df;
     --paper: #0e0e10;
     --muted: rgba(232, 230, 223, 0.55);
@@ -163,6 +165,46 @@
     text-align: center;
     margin-top: 60px;
   }
+
+  /* Reading progress — thin bar across the very top of the viewport. */
+  #readbar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--link);
+    opacity: 0.7;
+    z-index: 9999;
+    pointer-events: none;
+    transition: background 0.25s ease;
+  }
+
+  /* Prev / next post navigation at the bottom of the article. */
+  .post-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 0.95em;
+  }
+  .post-nav a {
+    color: var(--link);
+    font-style: italic;
+    text-decoration: underline;
+    text-decoration-thickness: 0.5px;
+    text-underline-offset: 2px;
+  }
+  .post-nav .dir {
+    display: block;
+    font-size: 0.78em;
+    font-style: normal;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+  .post-nav .older { margin-left: auto; text-align: right; }
 
   /* Unlock prompt for locked posts — uses theme variables so it works in both modes */
   .unlock-form { text-align: center; margin-top: 30px; }
@@ -563,6 +605,26 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     })();
   </script>
 
+  <div id="readbar"></div>
+  <script>
+    // Reading progress bar — fills left→right as you read down the page.
+    (function () {
+      var bar = document.getElementById('readbar');
+      if (!bar) return;
+      function update() {
+        var docH = document.documentElement.scrollHeight;
+        var viewH = window.innerHeight;
+        var scrollable = docH - viewH;
+        bar.style.width = scrollable > 1
+          ? (window.scrollY / scrollable) * 100 + '%'
+          : '0';
+      }
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+    })();
+  </script>
+
   <div id="scrollmark"></div>
   <script>
     (function () {
@@ -624,6 +686,8 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     </article>
   </div>
 
+  <script src="src/arcana.js"></script>
+  <script src="src/content.js"></script>
   <script src="https://unpkg.com/marked@13.0.3/marked.min.js"></script>
   <script>
     const ITERATIONS = 600000;
@@ -681,7 +745,10 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
         }
         var title = meta.title || slug;
         titleEl.textContent = title;
-        dateEl.textContent = meta.date || '';
+        var words = body.trim() ? body.trim().split(/\s+/).length : 0;
+        var mins = Math.max(1, Math.round(words / 220));
+        dateEl.textContent = (meta.date || '') +
+          (meta.date ? ' · ' : '') + '~' + mins + ' min read';
         document.title = title + ' — Sungwoo Cho';
         bodyEl.innerHTML = marked.parse(body);
 
@@ -743,6 +810,45 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
         })
         .then(renderMarkdown)
         .catch(function () { fail("no posty :("); });
+    })();
+  </script>
+  <script>
+    // Prev / next navigation from CONTENT.blog (newest-first), independent of
+    // whether the post body has loaded or decrypted yet.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var slug = params.get('slug');
+      var list = (window.CONTENT && window.CONTENT.blog) || [];
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].slug === slug) { idx = i; break; }
+      }
+      if (idx === -1) return;
+      var newer = idx > 0 ? list[idx - 1] : null;
+      var older = idx < list.length - 1 ? list[idx + 1] : null;
+      if (!newer && !older) return;
+
+      function makeLink(post, cls, label, prefix, suffix) {
+        var div = document.createElement('div');
+        div.className = cls;
+        var dir = document.createElement('span');
+        dir.className = 'dir';
+        dir.textContent = label;
+        var a = document.createElement('a');
+        a.href = 'post.html?slug=' + encodeURIComponent(post.slug) +
+          (post.locked ? '&locked=1' : '');
+        a.textContent = prefix + post.title + suffix;
+        div.appendChild(dir);
+        div.appendChild(a);
+        return div;
+      }
+
+      var nav = document.createElement('nav');
+      nav.className = 'post-nav';
+      if (newer) nav.appendChild(makeLink(newer, 'newer', 'newer', '← ', ''));
+      if (older) nav.appendChild(makeLink(older, 'older', 'older', '', ' →'));
+      var article = document.querySelector('article');
+      if (article) article.appendChild(nav);
     })();
   </script>
 </body>

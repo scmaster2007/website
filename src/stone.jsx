@@ -50,9 +50,19 @@
     [8,9],
   ];
 
+  // Names of the 10 sephirot, same order as SEPHIROT positions.
+  const SEPHIROT_NAMES = [
+    ['Keter', 'כתר'],     ['Chokhmah', 'חכמה'], ['Binah', 'בינה'],
+    ['Chesed', 'חסד'],    ['Gevurah', 'גבורה'], ['Tiferet', 'תפארת'],
+    ['Netzach', 'נצח'],   ['Hod', 'הוד'],       ['Yesod', 'יסוד'],
+    ['Malkhut', 'מלכות'],
+  ];
+
   // Tree of Life rendered as a small neural network — memoized so it never
-  // re-renders during scroll
+  // re-renders during scroll. Hovering a sephirah enlarges it and reveals
+  // its name (tap works too).
   const TreeOfLife = React.memo(function TreeOfLife() {
+    const [hover, setHover] = React.useState(-1);
     return (
       <svg viewBox="0 0 200 318" width="100%" height="100%"
            preserveAspectRatio="xMidYMid meet"
@@ -68,16 +78,41 @@
         })}
         {SEPHIROT.map(function (p, i) {
           return (
-            <circle key={'h' + i} cx={p[0]} cy={p[1]} r="12"
+            <circle key={'h' + i} cx={p[0]} cy={p[1]}
+                    r={hover === i ? 19 : 12}
                     className="tol-halo"
                     style={{ animationDelay: (i * 0.2) + 's' }} />
           );
         })}
         {SEPHIROT.map(function (p, i) {
           return (
-            <circle key={'c' + i} cx={p[0]} cy={p[1]} r="5.6"
+            <circle key={'c' + i} cx={p[0]} cy={p[1]}
+                    r={hover === i ? 8.5 : 5.6}
                     className="tol-core"
                     style={{ animationDelay: (i * 0.2) + 's' }} />
+          );
+        })}
+        {hover !== -1 && (
+          <text className="tol-label"
+                x={SEPHIROT[hover][0]}
+                y={hover === 0 ? SEPHIROT[hover][1] - 18 : SEPHIROT[hover][1] + 27}
+                textAnchor="middle">
+            {SEPHIROT_NAMES[hover][0]} · {SEPHIROT_NAMES[hover][1]}
+          </text>
+        )}
+        {/* invisible, larger hit targets on top so hovering is forgiving.
+            pointer-events 'visible' (not 'all') keeps them inert while an
+            ancestor hides the stone via visibility. */}
+        {SEPHIROT.map(function (p, i) {
+          return (
+            <circle key={'t' + i} cx={p[0]} cy={p[1]} r="15"
+                    fill="none"
+                    style={{ pointerEvents: 'visible' }}
+                    onMouseEnter={function () { setHover(i); }}
+                    onMouseLeave={function () { setHover(-1); }}
+                    onClick={function () {
+                      setHover(function (h) { return h === i ? -1 : i; });
+                    }} />
           );
         })}
       </svg>
@@ -186,11 +221,30 @@
       fill: #ffcc7a;
       filter: drop-shadow(0 0 3px rgba(255,170,80,.95));
       animation: tol-corepulse 3.1s ease-in-out infinite;
+      transition: r 0.3s cubic-bezier(0.2, 0.8, 0.3, 1.2);
     }
     .tol-halo {
       fill: #e08a3c;
       filter: blur(3px);
       animation: tol-halopulse 3.1s ease-in-out infinite;
+      transition: r 0.3s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+    }
+    @keyframes tol-labelin { from { opacity: 0; } to { opacity: 1; } }
+    .tol-label {
+      fill: #ffd9a0;
+      font-family: "Source Serif 4", Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      stroke: rgba(60, 12, 10, 0.85);
+      stroke-width: 3;
+      paint-order: stroke;
+      pointer-events: none;
+      animation: tol-labelin 0.25s ease both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tol-core, .tol-halo { transition: none; }
+      .tol-label { animation: none; }
     }
     .stone-breathe { animation: stone-breathe 5.2s ease-in-out infinite; }
     .stone-sweep { animation: stone-sweep 4.8s ease-in-out infinite; }
@@ -454,10 +508,12 @@
             pointerEvents: 'none',
           }} />
 
-          {/* the stone + tree */}
+          {/* the stone + tree — visibility gate keeps the sephirot hit
+              circles inert while the stone is still faded out */}
           <div style={{
             position: 'absolute', left: '50%', top: '50%',
             opacity: stoneOpacity,
+            visibility: stoneOpacity > 0 ? 'visible' : 'hidden',
             transform: 'translate(-50%, -50%) scale(' + stoneScale + ')',
             willChange: 'transform, opacity',
             display: 'flex', flexDirection: 'column', alignItems: 'center',

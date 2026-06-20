@@ -103,4 +103,6 @@ One of capitalism's contradictions then, is its handling of coagulated labor tim
 
 The author generally agrees with Necker's conclusion about the development of productive forces and their relation to the average laboring hours of a workforce. More specifically, Necker demonstrates that as machinery, tools used to embed labor time in a commodity get increasingly advanced/efficient, the OVERALL hours of laboring stay the same: what only changes is the ratio between the time it takes to reproduce the wage that the proletarian is given (this takes less time) and how much of that time is put to use in the creation surplus value (more of that same time is devoted to this). (This general idea is further formalized in the author's later works, it's called **relative surplus value**).
 
-We can directly observe this phenomena by analyzing the time of
+We can directly observe this phenomena by analyzing the change in the average number of hours of work with respect to time. We include working bodies of all nations with regards to the number of hours worked on a same task, and we gather data mainly from this paper (https://eml.berkeley.edu/~saez/GethinSaez2025.pdf) which largely confirms the claim that the working number of hours do stay constant over time, with slight fluctuations based on gender and time.
+
+# CHPT 6:

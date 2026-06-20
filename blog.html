@@ -21,17 +21,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
+    color-scheme: light;
     --ink: #1a1814;
     --paper: #fdfcf8;
     --selection: rgba(0, 0, 0, 0.12);
     --thumb: rgba(14, 14, 16, 0.10);
   }
   :root[data-theme="dark"] {
+    color-scheme: dark;
     --ink: #e8e6df;
     --paper: #0e0e10;
     --selection: rgba(255, 255, 255, 0.14);
     --thumb: rgba(232, 230, 223, 0.10);
   }
+  #post-search::placeholder { color: inherit; opacity: 0.5; }
 
   html, body { margin: 0; padding: 0; overscroll-behavior-y: none; }
   body {
@@ -129,11 +132,13 @@
   })();
 </script>
 
+<script src="src/arcana.js"></script>
+
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<script type="text/babel" src="src/content.jsx"></script>
+<script type="text/babel" src="src/content.js"></script>
 <script type="text/babel" src="src/editable.jsx"></script>
 <script type="text/babel" src="src/section.jsx"></script>
 <script type="text/babel" src="src/sections.jsx"></script>
@@ -175,6 +180,16 @@
     const [isDark, setIsDark] = React.useState(
       () => document.documentElement.dataset.theme === 'dark'
     );
+    const [gold, setGold] = React.useState(() => {
+      try { return localStorage.getItem('gold') === '1'; } catch (e) { return false; }
+    });
+
+    // Search: q filters titles/dates immediately; post bodies are fetched
+    // lazily on the first keystroke for full-text search.
+    const [q, setQ] = React.useState('');
+    const [bodies, setBodies] = React.useState(null);
+    const bodiesRequested = React.useRef(false);
+    const searchRef = React.useRef(null);
 
     const toggleTheme = () => {
       setIsDark(prev => {
@@ -186,14 +201,57 @@
       });
     };
 
+    // Sync with arcana.js (keyboard shortcuts + typed secrets).
+    React.useEffect(() => {
+      const onTheme = (e) => setIsDark(e.detail.theme === 'dark');
+      const onGold = (e) => setGold(!!e.detail.gold);
+      window.addEventListener('arcana:theme', onTheme);
+      window.addEventListener('arcana:gold', onGold);
+      return () => {
+        window.removeEventListener('arcana:theme', onTheme);
+        window.removeEventListener('arcana:gold', onGold);
+      };
+    }, []);
+
+    // Arriving via "/" on another page lands on blog.html#search. Clear the
+    // hash after focusing so reloads/bookmarks don't keep stealing focus.
+    React.useEffect(() => {
+      if (window.location.hash === '#search' && searchRef.current) {
+        searchRef.current.focus();
+        try {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch (e) {}
+      }
+    }, []);
+
     const ink   = isDark ? '#e8e6df' : '#1a1814';
     const paper = isDark ? '#0e0e10' : '#fdfcf8';
-    const accent = isDark ? '#8ab4f8' : 'oklch(0.45 0.18 255)';
+    const accent = gold
+      ? (isDark ? '#d4af5f' : '#8f6e1d')
+      : (isDark ? '#8ab4f8' : 'oklch(0.45 0.18 255)');
 
     const C = window.CONTENT || {};
     const cats = (C.blogCategories && C.blogCategories.length)
       ? C.blogCategories : ['Notes'];
     const posts = C.blog || [];
+
+    // Fetch all unlocked post bodies once, the first time a search is typed.
+    React.useEffect(() => {
+      if (!q.trim() || bodiesRequested.current) return;
+      bodiesRequested.current = true;
+      const unlocked = posts.filter(p => !p.locked && p.slug);
+      Promise.all(unlocked.map(p =>
+        fetch('posts/' + p.slug + '.md')
+          .then(r => (r.ok ? r.text() : ''))
+          // strip the ---title/date--- frontmatter (it isn't visible content)
+          .then(t => [p.slug, t.replace(/^---\s*\n[\s\S]*?\n---\s*\n/, '').toLowerCase()])
+          .catch(() => [p.slug, ''])
+      )).then(pairs => {
+        const map = {};
+        pairs.forEach(([s, t]) => { map[s] = t; });
+        setBodies(map);
+      });
+    }, [q]);
 
     const grouped = {};
     cats.forEach(c => { grouped[c] = []; });
@@ -204,6 +262,23 @@
     Object.keys(grouped).forEach(c =>
       grouped[c].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
     );
+
+    const ql = q.trim().toLowerCase();
+    const matches = (p) => {
+      if (!ql) return true;
+      if ((p.title || '').toLowerCase().includes(ql)) return true;
+      if ((p.date || '').includes(ql)) return true;
+      if (bodies && p.slug && bodies[p.slug] && bodies[p.slug].includes(ql)) return true;
+      return false;
+    };
+    const shown = {};
+    let totalShown = 0;
+    cats.forEach(c => {
+      shown[c] = grouped[c].filter(matches);
+      totalShown += shown[c].length;
+    });
+    const searching = !!ql;
+    const visibleCats = cats.filter(c => !searching || shown[c].length > 0);
 
     const linkStyle = {
       color: accent,
@@ -255,36 +330,77 @@
               color: ink + '99',
               marginTop: 6,
             }}>
-              {posts.length} {posts.length === 1 ? 'post' : 'posts'}, sorted into
-              6 categories.
+              {searching
+                ? (totalShown + (totalShown === 1 ? ' post matches' : ' posts match') +
+                   (!bodies ? ' — searching titles, indexing contents…' : ''))
+                : (posts.length + (posts.length === 1 ? ' post' : ' posts') +
+                   ', sorted into ' + cats.length + ' categories.')}
+            </div>
+
+            {/* search — "/" focuses this from anywhere */}
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <input
+                id="post-search"
+                ref={searchRef}
+                type="text"
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                placeholder="seek and ye shall find…  ( / )"
+                autoComplete="off"
+                style={{
+                  width: 'min(420px, 90%)',
+                  padding: '8px 14px',
+                  fontFamily: 'inherit',
+                  fontStyle: 'italic',
+                  fontSize: 16,
+                  textAlign: 'center',
+                  background: 'transparent',
+                  color: ink,
+                  border: '1px solid ' + ink + '55',
+                  outline: 'none',
+                }}
+                onFocus={e => { e.target.style.borderColor = ink; }}
+                onBlur={e => { e.target.style.borderColor = ink + '55'; }}
+              />
             </div>
           </div>
 
           {/* category grid — boxy, like the homepage */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: 18,
-            alignItems: 'start',
-          }}>
-            {cats.map(cat => (
-              <window.Section
-                key={cat}
-                title={cat}
-                boxStyle="framed"
-                accent={accent}
-                ink={ink}
-                paper={paper}
-              >
-                <window.BlogPostList
-                  items={grouped[cat]}
+          {searching && totalShown === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              fontStyle: 'italic',
+              color: ink + '88',
+              marginTop: 40,
+            }}>
+              {bodies ? 'nothing found — the letters are silent.' : 'searching…'}
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: 18,
+              alignItems: 'start',
+            }}>
+              {visibleCats.map(cat => (
+                <window.Section
+                  key={cat}
+                  title={cat}
+                  boxStyle="framed"
                   accent={accent}
                   ink={ink}
-                  emptyText="Nothing here yet."
-                />
-              </window.Section>
-            ))}
-          </div>
+                  paper={paper}
+                >
+                  <window.BlogPostList
+                    items={shown[cat]}
+                    accent={accent}
+                    ink={ink}
+                    emptyText="Nothing here yet."
+                  />
+                </window.Section>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );

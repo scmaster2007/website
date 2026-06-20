@@ -104,6 +104,26 @@ const App = () => {
     setState(s => ({ ...s, paperId: s.paperId === 'dark' ? 'bone' : 'dark' }));
   }, []);
 
+  // Gold mode — the hermetic transmutation, toggled by src/arcana.js secrets.
+  const [gold, setGold] = React.useState(() => {
+    try { return localStorage.getItem('gold') === '1'; } catch (e) { return false; }
+  });
+
+  // arcana.js drives theme + gold from keyboard shortcuts and typed secrets;
+  // sync React state when it fires.
+  React.useEffect(() => {
+    const onTheme = (e) => setState(s => ({
+      ...s, paperId: e.detail.theme === 'dark' ? 'dark' : 'bone',
+    }));
+    const onGold = (e) => setGold(!!e.detail.gold);
+    window.addEventListener('arcana:theme', onTheme);
+    window.addEventListener('arcana:gold', onGold);
+    return () => {
+      window.removeEventListener('arcana:theme', onTheme);
+      window.removeEventListener('arcana:gold', onGold);
+    };
+  }, []);
+
   React.useEffect(() => {
     const theme = state.paperId === 'dark' ? 'dark' : 'light';
     document.documentElement.dataset.theme = theme;
@@ -129,10 +149,12 @@ const App = () => {
   const font   = window.FONT_OPTIONS.find(o => o.id === state.fontId)    || window.FONT_OPTIONS[0];
 
   const ink = paper.ink;
-  // Softer blue in dark mode
-  const accentValue = isDark
-    ? '#8ab4f8'
-    : (accent.value === 'currentColor' ? ink : accent.value);
+  // Gold when transmuted; otherwise softer blue in dark mode
+  const accentValue = gold
+    ? (isDark ? '#d4af5f' : '#8f6e1d')
+    : isDark
+      ? '#8ab4f8'
+      : (accent.value === 'currentColor' ? ink : accent.value);
   const effectiveColumns =
     viewportWidth < 760 ? 1 :
     viewportWidth < 1040 ? Math.min(state.columns, 2) :
