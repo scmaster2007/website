@@ -8,7 +8,7 @@ const CONTENT = {
   ],
   email: 'solomon@ucsd.edu',
   emailAlt: 'sungwoocho2007@gmail.com',
-  cv: '67',
+  cv: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
   // Set to '' for hiding the buttons
   github:  'https://github.com/scmaster2007',
   twitter: '',
@@ -50,7 +50,6 @@ const CONTENT = {
   ],
 
 
-  // Categories for the full blog page (blog.html).
   blogCategories: ['Notes', 'Theories', 'Philosophy', 'Science', 'Updates', 'Personal'],
 
   blog: [
