@@ -36,9 +36,9 @@ const CONTENT = {
   ],
 
   now: [
-    `Reading: There will be a scientific theory of deep learning.`,
+    `Reading: Ethics by Spinoza`,
     `Working: on my papers!`,
-    `Taking: CSE30, CSE100R, CSE101, and CSE151A. `,
+    `Taking: CSE151B this summer`,
     `**P.S. Scroll all the way down!**`,
   ],
 
