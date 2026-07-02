@@ -53,17 +53,19 @@ const CONTENT = {
   blogCategories: ['Notes', 'Theories', 'Philosophy', 'Science', 'Updates', 'Personal'],
 
   blog: [
-	{ date: '2026-06-10', title: 'A Proof Regarding the Necessity of TzimTzum', slug: 'einsof', category: 'Philosophy'},
+	  { date: '2026-06-22', title: 'My Opinions on \"AI Safety\"', slug: 'aisafety', category: 'Personal'},
+  
+    { date: '2026-06-10', title: 'A Proof Regarding the Necessity of TzimTzum', slug: 'einsof', category: 'Philosophy'},
   
     { date: '2026-05-27', title: 'ToSV Part 1', slug: 'ToSVx1_notes', category: 'Notes'},
 
-  { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor', category: 'Theories'},
+    { date: '2026-05-25', title: 'AGI and Labor', slug: 'agiandlabor', category: 'Theories'},
 
-  { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts', category: 'Updates' },
+    { date: '2026-05-24', title: 'On Encrypted Posts', slug: 'onencryptedposts', category: 'Updates' },
 
-  { date: '2026-05-06', title: 'test', slug: '260506test1', locked: true, category: 'Personal'},
+    { date: '2026-05-06', title: 'test', slug: '260506test1', locked: true, category: 'Personal'},
 
-  { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome', category: 'Updates' },
+    { date: '2026-05-04', title: 'greetings', slug: '2026-05-04-welcome', category: 'Updates' },
 
   
 ],

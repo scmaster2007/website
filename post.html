@@ -322,18 +322,33 @@
   #gif-btn.off .icon-eye { display: none; }
   #gif-btn.off .icon-eye-off { display: block; }
 
-  /* Asuka dance */
+  /* Spinning Goguryeo seal in the side gutters. The PNG is pure black, so it is
+     inverted to white in dark mode to stay visible. Positioned with top+margin
+     (not translate) so it doesn't fight the rotate() animation. */
   .side-gif {
     position: fixed;
-    bottom: 0;
-    width: 180px;
+    top: 50%;
+    margin-top: -71px;        /* ~half the rendered height → vertically centred */
+    width: 140px;
     height: auto;
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;               /* behind the article text */
+    opacity: 0.45;
   }
-  .side-gif.left  { left: 10px; }
-  .side-gif.right { right: 10px;
+  /* Centre each seal within its side gutter. The text column is 680px + 22px
+     padding each side = 362px half-width, centred; so a gutter's centre sits at
+     (25vw − 181px) from the page edge. Offset by half the seal width (70px). */
+  .side-gif.left  { left:  calc(25vw - 251px); }
+  .side-gif.right { right: calc(25vw - 251px); }
+  :root[data-theme="dark"] .side-gif { filter: invert(1); opacity: 0.4; }
+
+  @keyframes seal-spin { to { transform: rotate(360deg); } }
+  .seal-spin { animation: seal-spin 18s linear infinite; }
+  .side-gif.right.seal-spin { animation-direction: reverse; }  /* mirror the pair */
+  @media (prefers-reduced-motion: reduce) {
+    .seal-spin { animation: none; }
   }
+
   @media (max-width: 1300px) {
     .side-gif { display: none; }
   }
@@ -370,11 +385,11 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <div class="physics-side left"  aria-hidden="true"><canvas></canvas></div>
   <div class="physics-side right" aria-hidden="true"><canvas></canvas></div>
 
-  <!-- Side mascot GIFs. Drop a transparent-bg GIF at uploads/asuka.gif.
+  <!-- Spinning Goguryeo seal in each side gutter.
        `src` is set by JS from data-gif-src so the toggle (and a saved "off"
        preference) can avoid loading the file at all. -->
-  <img class="side-gif left"  data-gif-src="uploads/asuka.gif" alt="" aria-hidden="true" onerror="this.style.display='none'">
-  <img class="side-gif right" data-gif-src="uploads/asuka.gif" alt="" aria-hidden="true" onerror="this.style.display='none'">
+  <img class="side-gif seal-spin left"  data-gif-src="uploads/goguryeo-seal.png" alt="" aria-hidden="true" onerror="this.style.display='none'">
+  <img class="side-gif seal-spin right" data-gif-src="uploads/goguryeo-seal.png" alt="" aria-hidden="true" onerror="this.style.display='none'">
 
   <script>
     // Music toggle. The button lives inside the post header (further down in
@@ -679,7 +694,7 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
               <line x1="2" y1="2" x2="22" y2="22"/>
             </svg>
           </button>
-          <audio id="music-audio" src="uploads/theme.mp3" loop preload="none"></audio>
+          <audio id="music-audio" src="uploads/Capirinha.mp3" loop preload="none"></audio>
         </div>
         <time class="post-date" id="date"></time>
       </header>
