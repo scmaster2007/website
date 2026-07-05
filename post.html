@@ -718,6 +718,54 @@ integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0
        DOM — defense-in-depth in case a post ever contains untrusted markup. -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.7/dist/purify.min.js" integrity="sha384-qJNkHwhlYywDHfyoEe1np+1lYvX/8x+3gHCKFhSSBMQyCFlvFnn+zXmaebXl21rV" crossorigin="anonymous"></script>
   <script>
+    // Keep TeX out of markdown's reach. Without this, marked applies its own
+    // escape/emphasis rules inside math spans — e.g. `\%` loses its backslash
+    // and bare `%` then starts a TeX comment (the symptom: percent signs
+    // vanish), `\\` matrix breaks collapse, and `_` pairs into <em> across
+    // neighbouring spans. These tokenizers capture $$…$$, $…$, \[…\], \(…\)
+    // verbatim; KaTeX auto-render processes the untouched delimiters later.
+    (function () {
+      function esc(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      var mathBlock = {
+        name: 'mathBlock',
+        level: 'block',
+        start: function (src) {
+          var i = src.search(/\$\$|\\\[/);
+          return i === -1 ? undefined : i;
+        },
+        tokenizer: function (src) {
+          var m = /^\$\$[\s\S]+?\$\$/.exec(src) || /^\\\[[\s\S]+?\\\]/.exec(src);
+          if (m) return { type: 'mathBlock', raw: m[0], text: m[0] };
+        },
+        renderer: function (token) {
+          return '<p>' + esc(token.text) + '</p>\n';
+        },
+      };
+      var mathInline = {
+        name: 'mathInline',
+        level: 'inline',
+        start: function (src) {
+          var i = src.search(/\$|\\\(/);
+          return i === -1 ? undefined : i;
+        },
+        tokenizer: function (src) {
+          var m = /^\$\$[\s\S]+?\$\$/.exec(src)
+               || /^\$(?:\\.|[^\\$\n])+?\$/.exec(src)
+               || /^\\\([\s\S]+?\\\)/.exec(src);
+          if (m) return { type: 'mathInline', raw: m[0], text: m[0] };
+        },
+        renderer: function (token) {
+          return esc(token.text);
+        },
+      };
+      if (window.marked && marked.use) {
+        marked.use({ extensions: [mathBlock, mathInline] });
+      }
+    })();
+  </script>
+  <script>
     const ITERATIONS = 600000;
 
     async function decryptBlob(b64, password) {
