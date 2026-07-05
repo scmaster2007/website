@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSP: every allowed origin is enumerated; anything else (injected scripts,
+     exfiltration endpoints, plugins, iframes) is blocked by the browser.
+     Kept identical across index/blog/post for maintainability. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https://sungwoo.goatcounter.com; media-src 'self'; connect-src 'self' https://sungwoo.goatcounter.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="no-referrer">
 <title>Post — Sungwoo Cho</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -372,13 +377,17 @@
   }
   input, textarea, [contenteditable] { cursor: text; }
 </style>
-<!-- KaTeX -->
+<!-- KaTeX — version-pinned with subresource integrity so a compromised CDN
+     can't swap the file contents. -->
 <link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
 </head>
 <body>
   <!-- Physics cascade: small squared circles falling down each sidebar. -->
@@ -704,7 +713,10 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
   <script src="src/arcana.js"></script>
   <script src="src/content.js"></script>
-  <script src="https://unpkg.com/marked@13.0.3/marked.min.js"></script>
+  <script src="https://unpkg.com/marked@13.0.3/marked.min.js" integrity="sha384-YTBHtsL8yVTHcLakYNyrOfK3K+QQcXiECuaALJ+3j7Mo681Rtzadt8NR6WrZH+eQ" crossorigin="anonymous"></script>
+  <!-- DOMPurify: sanitizes the HTML that marked produces before it touches the
+       DOM — defense-in-depth in case a post ever contains untrusted markup. -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.7/dist/purify.min.js" integrity="sha384-qJNkHwhlYywDHfyoEe1np+1lYvX/8x+3gHCKFhSSBMQyCFlvFnn+zXmaebXl21rV" crossorigin="anonymous"></script>
   <script>
     const ITERATIONS = 600000;
 
@@ -766,7 +778,8 @@ href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
         dateEl.textContent = (meta.date || '') +
           (meta.date ? ' · ' : '') + '~' + mins + ' min read';
         document.title = title + ' — Sungwoo Cho';
-        bodyEl.innerHTML = marked.parse(body);
+        var rawHtml = marked.parse(body);
+        bodyEl.innerHTML = window.DOMPurify ? DOMPurify.sanitize(rawHtml) : rawHtml;
 
         if (window.renderMathInElement) {
           renderMathInElement(bodyEl, {
