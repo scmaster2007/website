@@ -14,7 +14,7 @@ const CONTENT = {
   twitter: '',
 
   about: [
-    'I am a 1st-year undergraduate at UC San Diego pursuing a bachelors in Artificial Intelligence and a Minor in Pure Mathematics. I enjoy thinking about the intuition of deep learning, math, and mechanistic interpretability.',
+    'I am a 2nd-year undergraduate at UC San Diego pursuing a bachelors in Artificial Intelligence and a Minor in Pure Mathematics. I enjoy thinking about the intuition of deep learning, math, and mechanistic interpretability.',
     'Most days I am studying for classes and reading fun papers. I also like to learn about new topics that excite me, which oftentimes all occupy a broad domain of different subjects.',
     'Right now I\'m working with Tao Wang under Sicun Gao\'s group, and also used to work in Pengtao Xie\'s lab. I (occasionally) do research independently.',
     'Feel free to reach out if you are interested in what I do or want to work together!'
@@ -38,14 +38,13 @@ const CONTENT = {
   now: [
     `Reading: Ethics by Spinoza`,
     `Working: on my papers!`,
-    `Taking: CSE151B this summer`,
     `**P.S. Scroll all the way down!**`,
   ],
 
   funFacts: [
     'I am originally from South Korea, but was raised in the US.',
     'I love playing the clarinet (been playing it for over 9 years!) My favorite piece is the Poulenc Sonata.',
-    'I like to learn about esoteric knowledge specifically related to Judaism, Kabbalah, and Hermeticism. I promise I\'m not a LARPer, I\'ve read the Zohar! ',
+    'I like to learn about esoteric knowledge specifically related to Judaism, Kabbalah, and Hermeticism. I think that these subjects are quite interesting.',
     'I enjoy reading books about contemporary and political philosophy.',
   ],
 
