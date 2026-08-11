@@ -4,7 +4,7 @@
 //   t      toggle light / dark
 //   g h    go home          g w    go to writings
 //   /      search posts     j / k  drift down / up
-//   m      music (posts)    d      the dancers (posts)
+//   m      music (posts)
 //   ?      help panel       esc    close
 //
 // Secrets (typed anywhere): zohar — transmute to gold / back to lead;
@@ -198,7 +198,6 @@
       ['/', 'search posts'],
       ['j / k', 'drift down / up'],
       ['m', 'music (on posts)'],
-      ['d', 'the dancers (on posts)'],
       ['?', 'this panel'],
       ['esc', 'close'],
     ];
@@ -309,7 +308,6 @@
       case '/': e.preventDefault(); closeHelp(); doSearch(); break;
       case '?': e.preventDefault(); toggleHelp(); break;
       case 'm': clickBtn('music-btn'); break;
-      case 'd': clickBtn('gif-btn'); break;
       case 'j': window.scrollBy({ top: 320, behavior: reducedMotion ? 'auto' : 'smooth' }); break;
       case 'k': window.scrollBy({ top: -320, behavior: reducedMotion ? 'auto' : 'smooth' }); break;
     }

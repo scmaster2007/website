@@ -52,6 +52,8 @@ const CONTENT = {
   blogCategories: ['Notes', 'Theories', 'Philosophy', 'Science', 'Updates', 'Personal'],
 
   blog: [
+    { date: '2026-08-11', title: 'Update', slug: 'personalupdate', locked: true, category: 'Personal'},
+    
     { date: '2026-06-10', title: 'A Proof Regarding TzimTzum', slug: 'einsof', category: 'Philosophy'},
   
     { date: '2026-05-27', title: 'ToSV 1', slug: 'ToSVx1_notes', category: 'Notes'},
