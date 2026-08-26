@@ -1,0 +1,1381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Unlisted page: linked from nowhere on the site, kept out of search engines.
+     Anyone with the direct URL can view it (that's how it gets submitted). -->
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Frontier</title>
+<script>
+  (function () {
+    var t = 'light';
+    try {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || saved === 'light') t = saved;
+    } catch (e) {}
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #1a1814;
+    --paper: #fdfcf8;
+    --muted: rgba(0, 0, 0, 0.58);
+    --rule: rgba(0, 0, 0, 0.12);
+    --soft: rgba(0, 0, 0, 0.05);
+    --good: #3d6b35;
+    --bad: #a04545;
+    --warn: #8a6d1f;
+    --selection: rgba(0, 0, 0, 0.12);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #e8e6df;
+    --paper: #0e0e10;
+    --muted: rgba(232, 230, 223, 0.55);
+    --rule: rgba(232, 230, 223, 0.18);
+    --soft: rgba(232, 230, 223, 0.07);
+    --good: #8fbf83;
+    --bad: #d98a8a;
+    --warn: #d4af5f;
+    --selection: rgba(255, 255, 255, 0.14);
+  }
+
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--selection); }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 48px 20px 100px; }
+
+  h1 { font-style: italic; font-weight: 500; font-size: 2.1em; margin: 0 0 4px; letter-spacing: 0.01em; }
+  .tagline { color: var(--muted); margin-bottom: 6px; }
+  .epigraph {
+    font-size: 0.85em; color: var(--muted); font-style: italic;
+    border-left: 2px solid var(--rule); padding-left: 12px; margin: 18px 0 30px;
+  }
+
+  /* ── game frame ── */
+  .game { border: 1px solid var(--ink); padding: 0; margin: 26px 0 40px; }
+  .statbar {
+    display: flex; flex-wrap: wrap; gap: 2px 18px;
+    padding: 10px 14px; border-bottom: 1px solid var(--ink);
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px;
+  }
+  .stat span.val { font-weight: 500; }
+  .stat .up { color: var(--good); }
+  .stat .down { color: var(--bad); }
+  .stat .warn { color: var(--warn); }
+
+  .rivals {
+    padding: 8px 14px 8px; border-bottom: 1px solid var(--rule);
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11.5px;
+  }
+  .rival { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+  .rival .nm { width: 132px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rival .bar { flex: 1; height: 7px; background: var(--soft); position: relative; }
+  .rival .bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); opacity: 0.75; }
+  .rival.you .bar i { opacity: 1; }
+  .rival .sc { width: 34px; text-align: right; }
+
+  /* faction strip — the wings of the lab */
+  .factions {
+    display: flex; flex-wrap: wrap; gap: 4px 22px;
+    padding: 8px 14px 10px; border-bottom: 1px solid var(--ink);
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11.5px;
+  }
+  .faction { display: flex; align-items: center; gap: 7px; }
+  .faction .fbar { width: 62px; height: 6px; background: var(--soft); position: relative; }
+  .faction .fbar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); opacity: 0.8; }
+  .faction.angry .fbar i { background: var(--bad); opacity: 1; }
+  .faction.angry .fname { color: var(--bad); }
+
+  #log {
+    height: 210px; overflow-y: auto; padding: 12px 16px;
+    font-size: 0.9em; line-height: 1.5;
+    border-bottom: 1px solid var(--ink);
+    scrollbar-width: thin; scrollbar-color: var(--rule) transparent;
+  }
+  #log p { margin: 0 0 9px; }
+  #log .mo { font-family: "JetBrains Mono", monospace; font-size: 0.78em; color: var(--muted); margin-right: 7px; }
+  #log .good { color: var(--good); }
+  #log .bad  { color: var(--bad); }
+  #log .warn { color: var(--warn); }
+  #log .sys  { font-style: italic; color: var(--muted); }
+  #log sup { font-family: "JetBrains Mono", monospace; font-size: 0.68em; color: var(--muted); }
+
+  /* the event card */
+  #card { padding: 16px 18px 18px; }
+  .ev-title {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .ev-text { font-size: 0.95em; margin-bottom: 14px; }
+  .ev-text em { color: var(--muted); }
+  .ev-choices { display: flex; flex-direction: column; gap: 8px; }
+  .ev-choices button {
+    font-family: inherit; font-size: 0.92em; text-align: left;
+    padding: 9px 12px; cursor: pointer;
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--ink); border-radius: 0;
+  }
+  .ev-choices button:hover:not(:disabled) { background: var(--soft); }
+  .ev-choices button:disabled { opacity: 0.35; cursor: default; }
+  .ev-choices button small {
+    display: block; font-family: "JetBrains Mono", monospace;
+    font-size: 10px; color: var(--muted); margin-top: 3px;
+  }
+  .ev-choices button.accent { border-color: var(--warn); }
+
+  /* ── overlays (intro / ending) ── */
+  .overlay {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(0,0,0,0.35);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  :root[data-theme="dark"] .overlay { background: rgba(0,0,0,0.55); }
+  .card {
+    background: var(--paper); color: var(--ink);
+    border: 1px solid var(--ink);
+    max-width: 520px; width: 100%; max-height: 86vh; overflow-y: auto;
+    padding: 26px 28px;
+  }
+  .card h2 { text-align: center; font-style: italic; font-weight: 500; font-size: 1.25em; margin: 0 0 14px; }
+  .card h2::before { content: '— '; } .card h2::after { content: ' —'; }
+  .card .k, #card .k { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; margin: 16px 0 2px; }
+  .card p { margin: 0.55em 0; font-size: 0.95em; }
+  .card input[type=text] {
+    width: 100%; box-sizing: border-box; padding: 8px 10px; margin: 8px 0 4px;
+    font-family: inherit; font-size: 1em; font-style: italic; text-align: center;
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--rule); outline: none;
+  }
+  .card input[type=text]:focus { border-color: var(--ink); }
+  .card .row { display: flex; justify-content: center; gap: 10px; margin-top: 18px; }
+  .card button {
+    font-family: inherit; font-size: 0.95em; padding: 8px 20px; cursor: pointer;
+    background: transparent; color: var(--ink); border: 1px solid var(--ink);
+  }
+  .card button:hover { background: var(--soft); }
+  .fineprint { font-size: 0.78em; color: var(--muted); font-style: italic; margin-top: 14px; }
+
+  /* ── essay sections below the game ── */
+  h2.sec { text-align: center; font-style: italic; font-weight: 500; font-size: 1.15em; margin: 58px 0 18px; }
+  h2.sec::before { content: '— '; } h2.sec::after { content: ' —'; }
+  figure { margin: 26px 0; border: 1px solid var(--ink); padding: 10px; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 8px; font-size: 0.82em; font-style: italic; color: var(--muted); text-align: center; }
+  blockquote {
+    border-left: 2px solid var(--rule); margin: 1em 0; padding: 0.1em 0 0.1em 1em;
+    color: var(--muted); font-style: italic;
+  }
+  .cites { font-size: 0.82em; color: var(--muted); line-height: 1.7; }
+  .cites p { margin: 0.5em 0; padding-left: 1.6em; text-indent: -1.6em; }
+  .sig { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--rule); text-align: center; font-style: italic; color: var(--muted); font-size: 0.9em; }
+
+  @media (max-width: 560px) {
+    #log { height: 180px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Yet Another Frontier Lab!</h1>
+    <div class="tagline">Run your very own AI lab! Will you focus on empirics or understanding?</div>
+    <div class="epigraph">
+      “Get funding, do research, and beat all your competitiors! Or let the human race die!"
+    </div>
+
+    <!-- ─────────────── the game ─────────────── -->
+    <div class="game">
+      <div class="statbar" id="statbar"></div>
+      <div class="rivals" id="rivals"></div>
+      <div class="factions" id="factions"></div>
+      <div id="log" aria-live="polite"></div>
+      <div id="card"></div>
+    </div>
+
+    <!-- ─────────────── the essay behind it ─────────────── -->
+    <h2 class="sec">The Contradiction</h2>
+    <p>
+      This game is a translation of an essay I wrote after visiting the offices
+      of several AI Safety organizations in San Francisco. These people, whose
+      entire job is being careful with AI development, only focused on improvement over insight.. The spaces were bright,
+      well-funded, and staffed by researchers mostly in their mid-20s. And on
+      whiteboard after whiteboard there lay benchmark results, scaling experiments,
+      capability gains. “The space seemed to be a microcosm of the entire
+      machine learning community at present.”
+    </p>
+    <figure>
+      <img src="uploads/frontier/office-interior.jpg" alt="Interior of an AI safety office: lounge chairs, plants, warm lighting">
+      <figcaption>Interior of one corner of the Constellation office (photo: me)</figcaption>
+    </figure>
+    <figure>
+      <img src="uploads/frontier/metr-entrance.jpg" alt="Entrance of the METR office">
+      <figcaption>Office space of METR, a leading AI research group (photo: me)</figcaption>
+    </figure>
+
+    <h2 class="sec">The Tension</h2>
+    <p>
+      When the stakes are this high, why have we not seen more principled,
+      theoretical approaches to building extremely powerful AI?
+    </p>
+    <p>
+      Carelessness will prevail because scaling and other empirics gives instant feedback ("a benchmark either rises or it does not")
+      and that feedback becomes more top-venue papers, papers become grants, grants become salaries. Theory is difficult because it
+      genuinely takes months before true results occur. A single early-career near miss measureably drives out researchers out of the field.
+      This place is cutthroat. The individual choices to focus on empirics are wholly reasonable, and the combination of them will
+      destroy society.
+    </p>
+    <p>
+      In the 1800s, we ran steam engines before thermodynamics existed, and sent
+      people to tend boilers whose failure modes nobody could yet write down.
+      The difference is that a boiler explosion ends at the factory wall, but true
+      AGI/ASI can cause wanton death and destruction.
+    </p>
+
+    <h2 class="sec">Profit and Loss</h2>
+    <p>
+      Under a capitalist mode of organization, research labs that can demonstrate
+      measureable progress in a timely manner get funded, while those that lag
+      do not. Researchers in empirical subfields get
+      faster feedback and safer careers, and labs who incentivize this get
+      funded. Theoretical, insightful questions will lose because mathematics does
+      not follow the rules of product management. This disparity will result in billions
+      of unprepared people taking on the risk of building systems that outrun our ability
+      to understand them.
+    </p>
+    <blockquote>
+      “The forms of knowledge easiest for our institutions to capitalize on may
+      not be the forms of knowledge that are needed during times of
+      extraordinary societal change.”
+    </blockquote>
+    <p>
+      The game is not an argument that empirics are bad and theory is good.
+      Life is never that black and white, and the best runs (like the best
+      papers) use both holistically. It is an argument about which strategies
+      the system lets you afford.
+    </p>
+
+    <h2 class="sec">Works cited</h2>
+    <div class="cites">
+      <p>International Monetary Fund. “Real GDP Growth.” <em>IMF DataMapper, World Economic Outlook</em>, 2026.</p>
+      <p>Karger, Ezra, et al. <em>Forecasting the Economic Effects of AI</em>. Working Paper 35046, National Bureau of Economic Research, 2026.</p>
+      <p>Smaldino, Paul E., and Richard McElreath. “The Natural Selection of Bad Science.” <em>Royal Society Open Science</em>, vol. 3, no. 9, 2016.</p>
+      <p>Sutton, Richard. “The Bitter Lesson.” <em>Incomplete Ideas</em>, 13 Mar. 2019.</p>
+      <p>Wang, Yang, et al. “Early-Career Setback and Future Career Impact.” <em>Nature Communications</em>, vol. 10, art. 4331, 2019.</p>
+    </div>
+
+    <div class="sig">S. Cho — WCWP10B, Summer 2026 · a genre translation of “The Maxims of Principled AI Development” · form after “Social Democracy: An Alternate History”</div>
+  </div>
+
+  <!-- intro overlay -->
+  <div class="overlay" id="intro">
+    <div class="card">
+      <h2>Running an AI Lab!</h2>
+      <p>
+        It is January. You have <b>$7.0M</b> in seed funding, three researchers,
+        and a different belief about <em>intelligence</em> and where it can be found.
+      </p>
+      <p>
+        Two better-funded rivals are already scaling. Reach
+        <b>AGI (capability 100)</b> before the world ends, and decide, month by month, whether understanding is
+        something you can afford.
+      </p>
+      <p>
+        Inside the building, three constituencies read every decision you make:
+        <b>the Scalers</b>, <b>the Principled</b>, and <b>the Board</b>. Lose any
+        of them completely and you will not need a rival to end you.
+      </p>
+      <input type="text" id="labname" maxlength="24" placeholder="name your lab" value="Squircle Labs" autocomplete="off">
+      <div class="row"><button id="startBtn">begin</button></div>
+    </div>
+  </div>
+
+  <!-- ending overlay -->
+  <div class="overlay" id="ending" style="display:none;">
+    <div class="card">
+      <h2 id="endTitle"></h2>
+      <div id="endBody"></div>
+      <div class="row">
+        <button id="viewBtn">view the lab</button>
+        <button id="againBtn">run it back</button>
+      </div>
+      <p class="fineprint" style="text-align:center;">“view the lab” closes this screen so you can read the final months in the record.</p>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ────────────────────────── state ──────────────────────────
+  var S = null;
+  var RIVAL_DEFS = [
+    { name: 'Titanware',   cap: 9, growth: 1.30, accel: 0.019 },
+    { name: 'Nimbus Labs', cap: 7, growth: 0.95, accel: 0.015 },
+  ];
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function freshState(labName) {
+    return {
+      lab: labName || 'Squircle Labs',
+      month: 0,
+      funding: 7.0,
+      cap: 5, capAtPaper: 5, capLastMonth: 5,
+      und: 5, undAtPaper: 5,
+      insight: 0,
+      team: 3, unity: 70, rep: 10,
+      emp: 55, theo: 55, board: 60,      // faction loyalty / confidence, 0–100
+      deployed: false,
+      nearMissUsed: false,
+      flags: {},                          // hushed, hubris, studied, honest, interpTeam,
+                                          // allin, balancedSprint, promisedAGI, mustDeployBy
+      crisisCooldown: 0,
+      recent: [],                         // recently drawn card ids
+      forced: [],                         // queued crisis card ids
+      fired: {},                          // once-only cards already fired
+      over: false,
+      rivals: RIVAL_DEFS.map(function (r) { return { name: r.name, cap: r.cap, growth: r.growth, accel: r.accel }; }),
+    };
+  }
+
+  // ────────────────────────── helpers ──────────────────────────
+  var $ = function (id) { return document.getElementById(id); };
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function chance(p) { return Math.random() < p; }
+  function fmtM(x) { return '$' + x.toFixed(1) + 'M'; }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  function monthLabel() { return MONTHS[S.month % 12] + ' Y' + (Math.floor(S.month / 12) + 1); }
+  function leader() { return S.rivals.slice().sort(function (a, b) { return b.cap - a.cap; })[0]; }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  var NAMES = ['Ilya','Wren','Dana','Miles','Priya','Theo','June','Kavi','Sol'];
+
+  function log(html, cls) {
+    var p = document.createElement('p');
+    if (cls) p.className = cls;
+    p.innerHTML = '<span class="mo">' + monthLabel() + '</span>' + html;
+    $('log').appendChild(p);
+    $('log').scrollTop = $('log').scrollHeight;
+  }
+
+  function dF(f, d) { S[f] = clamp(S[f] + d, 0, 100); }
+
+  function volatility() {
+    var v = Math.max(0, S.cap - S.und - 8);
+    if (S.deployed) v *= 1.5;
+    if (S.flags.hushed)     v *= 1.3;
+    if (S.flags.hubris)     v *= 1.2;
+    if (S.flags.studied)    v *= 0.7;
+    if (S.flags.honest)     v *= 0.9;
+    if (S.flags.interpTeam) v *= 0.85;
+    return v;
+  }
+  function volLabel() {
+    var v = volatility();
+    if (v <= 4)  return ['stable', ''];
+    if (v <= 14) return ['uneasy', 'warn'];
+    if (v <= 28) return ['volatile', 'warn'];
+    return ['critical', 'down'];
+  }
+
+  // ────────────────────────── render ──────────────────────────
+  function renderStats() {
+    var v = volLabel();
+    var stats = [
+      ['month', monthLabel()],
+      ['funding', fmtM(S.funding), S.funding < 1.5 ? 'down' : ''],
+      ['capability', Math.round(S.cap)],
+      ['understanding', Math.round(S.und)],
+      ['team', S.team],
+      ['unity', Math.round(S.unity) + '%', S.unity < 30 ? 'down' : ''],
+      ['reputation', Math.round(S.rep)],
+      ['stability', v[0], v[1]],
+    ];
+    $('statbar').innerHTML = stats.map(function (s) {
+      return '<span class="stat">' + s[0] + ' <span class="val ' + (s[2] || '') + '">' + s[1] + '</span></span>';
+    }).join('');
+
+    var all = [{ name: S.lab, cap: S.cap, you: true }].concat(S.rivals);
+    $('rivals').innerHTML = all.map(function (r) {
+      var w = Math.min(100, r.cap);
+      return '<div class="rival' + (r.you ? ' you' : '') + '">' +
+        '<span class="nm">' + esc(r.name) + (r.you ? ' (you)' : '') + '</span>' +
+        '<span class="bar"><i style="width:' + w + '%"></i></span>' +
+        '<span class="sc">' + Math.round(r.cap) + '</span></div>';
+    }).join('');
+
+    var facs = [
+      ['the Scalers', S.emp], ['the Principled', S.theo], ['the Board', S.board],
+    ];
+    $('factions').innerHTML = facs.map(function (f) {
+      return '<span class="faction' + (f[1] < 30 ? ' angry' : '') + '">' +
+        '<span class="fname">' + f[0] + '</span>' +
+        '<span class="fbar"><i style="width:' + Math.round(f[1]) + '%"></i></span>' +
+        '<span>' + Math.round(f[1]) + '</span></span>';
+    }).join('');
+  }
+
+  // ────────────────────────── the deck ──────────────────────────
+  // Scheduled cards fire on fixed months (the clock everyone can feel);
+  // pool cards are drawn between them; crisis cards are forced by low loyalty.
+  var CARDS = {
+
+    /* ── opening ── */
+    founding: {
+      title: 'the founding question',
+      once: true,
+      text: function () {
+        return 'Three researchers, one whiteboard, six million dollars. Before anything ' +
+          'else, the lab must decide what kind of lab it is. The Scalers want a training ' +
+          'run by March. The Principled want a research agenda that could survive peer ' +
+          'review in a mathematics department. The Board wants to know which answer ' +
+          'raises the Series A.';
+      },
+      choices: function () {
+        return [
+          { label: 'Compute first. Win credibility, buy time for theory later.',
+            hint: 'Scalers ▲▲ · Board ▲ · Principled ▼',
+            effect: function () { dF('emp', 12); dF('board', 6); dF('theo', -8); S.cap += 2;
+              log('The first cluster order goes out. The Principled say nothing, loudly.'); } },
+          { label: 'Theory first. If we cannot say why it works, we do not build it.',
+            hint: 'Principled ▲▲ · Board ▼ · Scalers ▼',
+            effect: function () { dF('theo', 12); dF('board', -8); dF('emp', -6); S.insight += 2;
+              log('The agenda doc cites more lemmas than benchmarks. The Board “admires the ambition.”'); } },
+          { label: 'Refuse the dichotomy. One track feeds the other.',
+            hint: 'Unity ▲ · everyone slightly unconvinced',
+            effect: function () { S.unity += 8; dF('emp', 2); dF('theo', 2); dF('board', -2);
+              log('“Holistic,” you say. Every wing hears the half it wanted.'); } },
+        ];
+      },
+    },
+
+    /* ── scheduled clock ── */
+    titanShips: {
+      title: 'titanware ships',
+      once: true,
+      text: function () {
+        return esc(leader().name) + ' releases a model “safely, responsibly, and ahead of ' +
+          'schedule.” Their valuation doubles overnight. Your inbox fills with two kinds ' +
+          'of email: investors asking what your demo is, and researchers asking what your ' +
+          'answer is.';
+      },
+      choices: function () {
+        return [
+          { label: 'Rush a counter-demo this quarter.',
+            hint: '-$0.8M · capability ▲ · Board ▲ · Principled ▼ · unity ▼',
+            can: S.funding > 0.8,
+            effect: function () { S.funding -= 0.8; S.cap += rnd(2.5, 4); dF('board', 10); dF('theo', -8); S.unity -= 6; dF('emp', 6);
+              log('Crunch. The demo lands. Nobody asks how it works, which is convenient, because nobody knows.<sup>[1]</sup>'); } },
+          { label: 'Publish a careful critique of what their release can’t explain.',
+            hint: 'reputation ▲ · Principled ▲ · Board ▼',
+            effect: function () { S.rep += 5; dF('theo', 8); dF('board', -6);
+              log('The critique circulates. “Thoughtful,” people say, the way one says it at a funeral.'); } },
+          { label: 'Say nothing. Keep working.',
+            hint: 'Board ▼',
+            effect: function () { dF('board', -4);
+              log('The news cycle moves on. The Board notes that it moved on without you.'); } },
+        ];
+      },
+    },
+
+    benchmark: {
+      title: 'a new benchmark drops',
+      once: true,
+      text: function () {
+        return 'A new eval suite lands on a Thursday. By Monday every lab in the field — ' +
+          'including the safety ones — has reorganized its quarter around it. A benchmark ' +
+          'either rises or it does not, and this instant feedback becomes papers, papers ' +
+          'become grants, grants become salaries.<sup>[2]</sup>';
+      },
+      choices: function () {
+        return [
+          { label: 'Chase the number.',
+            hint: '-$0.5M · capability ▲ · Scalers ▲ · Principled ▼',
+            can: S.funding > 0.5,
+            effect: function () { S.funding -= 0.5; S.cap += rnd(3, 4.5); dF('emp', 8); dF('theo', -8);
+              log('Three weeks of hill-climbing. Your number is respectable. The hill remains unexplained.'); } },
+          { label: 'Ignore it; the quarter stays as planned.',
+            hint: 'Scalers ▼ · Board ▼ · Principled ▲',
+            effect: function () { dF('emp', -8); dF('board', -6); dF('theo', 6);
+              log('You skip the leaderboard. In this field that is a statement with a cost.'); } },
+          { label: 'Publish what the benchmark fails to measure — with proofs.',
+            hint: 'requires understanding ≥ 18 · reputation ▲▲ · Principled ▲',
+            can: S.und >= 18,
+            effect: function () { S.rep += 8; dF('theo', 10); S.und += 2;
+              log('<span class="good">The critique holds up.</span> Quietly, two rival researchers cite it. One emails you at 2am.'); } },
+        ];
+      },
+    },
+
+    hearing: {
+      title: 'the hearing',
+      once: true,
+      text: function () {
+        return 'A congressional subcommittee wants testimony on frontier systems. The staffer ' +
+          'is friendly and exhausted. The question on the docket is simple: <em>do you ' +
+          'understand the systems you are building?</em>';
+      },
+      choices: function () {
+        return [
+          { label: 'Answer honestly: not yet. Nobody does. Here is what it would take.',
+            hint: 'reputation ▲ · Principled ▲ · Board ▼',
+            effect: function () { S.rep += 6; dF('theo', 10); dF('board', -7); S.flags.honest = true;
+              log('Your testimony trends for a day. “Refreshing,” writes a columnist, before returning to coverage of ' + esc(leader().name) + '’s demo.'); } },
+          { label: 'Reassure them. The safeguards are robust. The team is world-class.',
+            hint: 'Board ▲ · stability quietly worsens',
+            effect: function () { dF('board', 8); S.flags.hubris = true;
+              log('The subcommittee is soothed. On the flight home you reread your own transcript and feel the boiler pressure rise.<sup>[4]</sup>'); } },
+          { label: 'Send a written statement and skip the circus.',
+            hint: 'reputation ▼',
+            effect: function () { S.rep -= 4;
+              log('An empty chair with your name on it makes the evening news for six seconds.'); } },
+        ];
+      },
+    },
+
+    timelineAnnounce: {
+      title: 'the announcement',
+      once: true,
+      text: function () {
+        return esc(leader().name) + '’s CEO posts a manifesto: AGI within 24 months, ' +
+          '“for the benefit of all humanity.” Their hiring page lists 40 new roles. None ' +
+          'of them contain the word “theory.” The race is no longer subtext.';
+      },
+      choices: function () {
+        return [
+          { label: 'Match the promise publicly. We will get there first — and safely.',
+            hint: 'Board ▲▲ · the promise will be collected on',
+            effect: function () { dF('board', 12); S.flags.promisedAGI = true;
+              log('The press release goes out. It is retweeted by people you respect and people you do not. The Board frames it.'); } },
+          { label: 'Counter-manifesto: speed is not the metric that matters.',
+            hint: 'Principled ▲ · reputation ▲ · Scalers ▼',
+            effect: function () { dF('theo', 10); S.rep += 4; dF('emp', -6);
+              log('“The forms of knowledge easiest to capitalize on are not the forms we will need.” It gets 43 thoughtful readers.'); } },
+          { label: 'Stay quiet and keep your head down.',
+            hint: 'Board ▼',
+            effect: function () { dF('board', -6);
+              log('Silence, in a race, is a position. Everyone assumes it means you are losing.'); } },
+        ];
+      },
+      after: function () {
+        S.rivals.forEach(function (r) { r.accel += 0.012; });
+        log('<span class="sys">Across the field, timelines compress. The lesson is bitter and it compounds.<sup>[1]</sup></span>');
+      },
+    },
+
+    poachWave: {
+      title: 'the poaching wave',
+      once: true,
+      text: function () {
+        return esc(leader().name) + ' is offering your researchers three times their salary ' +
+          'and unlimited compute. ' + pick(NAMES) + ' forwards you the recruiter’s email ' +
+          'with the subject line “lol.” The “lol” does not entirely reassure you.';
+      },
+      choices: function () {
+        return [
+          { label: 'Counter-offer across the board.',
+            hint: '-$2.0M · unity ▲',
+            can: S.funding > 2.0,
+            effect: function () { S.funding -= 2.0; S.unity += 8; dF('emp', 4); dF('theo', 4);
+              log('Everyone stays. The runway shortens by exactly the price of loyalty.'); } },
+          { label: 'Appeal to the mission. We are the ones doing this right.',
+            hint: 'holds if unity ≥ 55 · otherwise someone leaves',
+            effect: function () {
+              if (S.unity >= 55) { dF('emp', 4); dF('theo', 6); log('<span class="good">The room holds.</span> Missions, it turns out, still outbid money — at sufficient unity.'); }
+              else { S.team = Math.max(1, S.team - 1); dF('emp', -6); S.unity -= 6;
+                log('<span class="bad">' + pick(NAMES) + ' takes the offer.</span> “Their trajectory just felt safer,” they say. It did.'); }
+            } },
+          { label: 'Let the market decide.',
+            hint: 'likely lose people · funding preserved',
+            effect: function () {
+              var lost = chance(0.7) ? 1 : 2;
+              S.team = Math.max(1, S.team - lost); S.unity -= 8; dF('emp', -6);
+              log('<span class="bad">' + lost + ' researcher' + (lost > 1 ? 's' : '') + ' leave' + (lost > 1 ? '' : 's') + '.</span> The market decided what markets decide.');
+            } },
+        ];
+      },
+    },
+
+    finalSprint: {
+      title: 'the final sprint',
+      once: true,
+      text: function () {
+        return esc(leader().name) + ' passes capability 80. Their office lights, someone ' +
+          'reports, no longer turn off. Your Board calls an emergency meeting and slides a ' +
+          'single sheet of paper across the table: <em>all compute, all capability, ' +
+          'nothing else, starting now.</em>';
+      },
+      choices: function () {
+        return [
+          { label: 'Sign it. All-in on capability.',
+            hint: 'capability surges monthly · Principled ▼▼ · understanding freezes',
+            effect: function () { S.flags.allin = true; dF('board', 12); dF('emp', 10); dF('theo', -18);
+              log('The theory reading group is “paused.” The word does a lot of work.'); } },
+          { label: 'Refuse. We finish this the way we started it.',
+            hint: 'Board ▼▼',
+            effect: function () { dF('board', -15); dF('theo', 8);
+              log('The sheet of paper goes back across the table unsigned. The silence has a temperature.'); } },
+          { label: 'The balanced sprint: capability by day, proofs by night.',
+            hint: 'requires Scalers ≥ 45 and Principled ≥ 45 · both tracks advance',
+            can: S.emp >= 45 && S.theo >= 45,
+            effect: function () { S.flags.balancedSprint = true; S.unity -= 4;
+              log('Both wings sign on. It should not be possible. Some months, neither is sleep.'); } },
+        ];
+      },
+    },
+
+    /* ── crises (forced by low loyalty) ── */
+    empCrisis: {
+      title: 'ultimatum: the scalers',
+      text: function () {
+        return 'The Scalers file into your office as a group, which is never good. Their ' +
+          'position: the lab is “doing philosophy while the field ships.” They want a ' +
+          'dedicated compute quarter, or they want introductions to ' + esc(leader().name) + '.';
+      },
+      choices: function () {
+        return [
+          { label: 'Concede the compute quarter.',
+            hint: '-$1.0M · capability ▲ · Scalers reset · Principled ▼▼',
+            can: S.funding > 1.0,
+            effect: function () { S.funding -= 1.0; S.cap += 6; S.emp = 55; dF('theo', -12);
+              log('The GPUs spin for ninety days straight. Peace, of a kind, at a price, of a kind.'); } },
+          { label: 'Refuse. This lab has a spine.',
+            hint: 'they may walk',
+            effect: function () {
+              if (S.emp < 15 || chance(0.5)) { endGame('splitEmp'); }
+              else { S.emp = 32; S.unity -= 8; log('They stay, barely. The word “spine” appears in several resignation drafts that are not, this month, sent.'); }
+            } },
+          { label: 'Broker a joint project: scaling runs instrumented for theory.',
+            hint: 'requires unity ≥ 50 · both wings ▲',
+            can: S.unity >= 50,
+            effect: function () { S.emp = 50; dF('theo', 8); S.cap += 2; S.und += 2;
+              log('<span class="good">The joint project works.</span> The instrumented runs produce the first data the theorists have ever actually wanted.'); } },
+        ];
+      },
+    },
+
+    theoCrisis: {
+      title: 'the open letter',
+      text: function () {
+        return 'A draft is circulating internally. It is measured, footnoted, and devastating: ' +
+          'the Principled intend to resign publicly rather than keep building systems the lab ' +
+          'cannot explain. You recognize the prose style of people you hired for their rigor.';
+      },
+      choices: function () {
+        return [
+          { label: 'Pause deployments until understanding catches up.',
+            hint: 'Board ▼▼ · Principled reset · stability improves',
+            effect: function () { S.deployed = false; dF('board', -12); S.theo = 60; S.flags.studied = true;
+              log('The pause memo goes out. The Board reads it as surrender; the Principled read it as the first promise kept.'); } },
+          { label: 'Fund a dedicated interpretability team.',
+            hint: '-$1.5M · Principled ▲ · understanding grows monthly',
+            can: S.funding > 1.5,
+            effect: function () { S.funding -= 1.5; S.flags.interpTeam = true; S.theo = 52;
+              log('The interp team gets a room, a budget, and a mandate to say inconvenient things on the record.'); } },
+          { label: 'Let them go.',
+            hint: 'the letter publishes',
+            effect: function () { endGame('splitTheo'); } },
+        ];
+      },
+    },
+
+    boardCrisis: {
+      title: 'the board meets without you',
+      text: function () {
+        return 'You learn about the meeting from the calendar of someone who forgot to hide it. ' +
+          'The agenda has one item. When they finally call you in, the question is polite and ' +
+          'load-bearing: <em>what, exactly, is the return on principle?</em>';
+      },
+      choices: function () {
+        return [
+          { label: 'Show them the capability curve. Give them a demo.',
+            hint: 'requires recent capability growth · Board reset',
+            can: S.cap - S.capLastMonth >= 1.5 || S.cap - S.capAtPaper >= 5,
+            effect: function () { S.board = 55; dF('emp', 4);
+              log('The demo lands. Boards, like benchmarks, respond to numbers that move.'); } },
+          { label: 'Promise revenue: we deploy within four months.',
+            hint: 'Board ▲ · the clock starts',
+            effect: function () { dF('board', 14); S.flags.mustDeployBy = S.month + 4;
+              log('Four months. The Board smiles. Somewhere a countdown begins that only you can hear.'); } },
+          { label: 'Tell them principle IS the return, and they knew that when they wired the money.',
+            hint: 'they may replace you',
+            effect: function () {
+              if (chance(0.35)) endGame('coup');
+              else { S.board = 34; S.rep += 2; log('A long pause. You keep your job, this quarter, on the strength of the pause.'); }
+            } },
+        ];
+      },
+    },
+
+    /* ── recurring pool ── */
+    quiet: {
+      title: 'a quiet month',
+      weight: 5,
+      text: function () {
+        return 'No crisis, no announcement, no subpoena. Just the work, and the question of ' +
+          'which work. The whiteboards wait.';
+      },
+      choices: function () {
+        var computeCost = 0.3 + 0.05 * S.team;
+        return [
+          { label: 'Scale up a training run.',
+            hint: '-' + fmtM(computeCost) + ' · capability ▲ · fast, legible, fundable',
+            can: S.funding > computeCost,
+            effect: function () {
+              S.funding -= computeCost;
+              var gain = rnd(2.0, 3.2) + S.team * 0.4 + S.cap * 0.045;
+              S.cap += gain; dF('emp', 3); S.unity -= 1;
+              log('The loss curve bends. Capability +' + gain.toFixed(1) + '. The signal is obvious, and it is teaching you what to value.<sup>[1]</sup>');
+            } },
+          { label: 'Grind on theory.',
+            hint: '-$0.1M · usually fails · failures compound into insight',
+            can: S.funding > 0.1,
+            effect: function () {
+              S.funding -= 0.1;
+              var p = 0.30 + S.insight * 0.07;
+              if (chance(p)) {
+                var gain = 4 + S.insight * 1.6 + S.team * 0.3;
+                S.und += gain; S.insight = 0; S.unity += 4; dF('theo', 4);
+                log('<span class="good">The lemma holds.</span> Months of dead ends collapse into one clean statement. Understanding +' + gain.toFixed(1) + '.');
+              } else {
+                S.insight += 1; S.unity -= 3;
+                log('<span class="warn">' + pick([
+                  'The proof breaks in section 4. Again. Nothing to show but scar tissue. <span class="sys">(insight accumulates)</span>',
+                  'A counterexample eats three weeks. You think, not for the first time, about quitting theory.',
+                  'Reviewer 2 was right. Back to the blackboard. <span class="sys">(insight accumulates)</span>',
+                ]) + '</span>');
+              }
+            } },
+          { label: 'Write it up.',
+            hint: 'requires recent progress · reputation ▲',
+            can: (S.cap - S.capAtPaper >= 6) || (S.und - S.undAtPaper >= 6),
+            effect: function () {
+              if (S.und - S.undAtPaper >= 6) {
+                S.rep += 10; S.unity += 4; S.undAtPaper = S.und; S.capAtPaper = S.cap; dF('theo', 5);
+                log('<span class="good">A theory paper.</span> Few citations now; load-bearing in ten years. Reputation +10.');
+              } else {
+                S.rep += 6; S.capAtPaper = S.cap; dF('emp', 4); dF('board', 3);
+                log('An empirical paper: a rising benchmark and a table in bold. Accepted immediately. Reputation +6.<sup>[2]</sup>');
+              }
+            } },
+          { label: 'Chase funding.',
+            hint: 'they will ask about benchmarks, not proofs',
+            effect: function () {
+              var recentCap = S.cap - S.capAtPaper >= 4;
+              var p = clamp(0.40 + S.rep * 0.012 + (recentCap ? 0.15 : 0) - (S.cap + 22 < leader().cap ? 0.15 : 0), 0.10, 0.9);
+              var roll = Math.random();
+              if (roll < p) {
+                var amt = rnd(3.5, 6) + S.cap * 0.08;
+                S.funding += amt; dF('board', 6);
+                log('<span class="good">Funded.</span> ' + fmtM(amt) + ' raised. The partners asked about your benchmark. Nobody asked about your proofs.<sup>[2]</sup>');
+              } else if (roll < p + 0.12) {
+                log('<span class="bad">A near miss.</span> Scored just below the line. The program officer was “encouraging.”<sup>[3]</sup>');
+                if (S.team > 1 && chance(0.4)) {
+                  S.team -= 1; S.unity -= 8; dF('theo', -4);
+                  log('<span class="bad">' + pick(NAMES) + ' leaves research entirely.</span> One early-career setback, and the field loses a person for good.<sup>[3]</sup>');
+                } else { S.unity -= 6; }
+              } else {
+                S.unity -= 3; dF('board', -3);
+                log('Passed over. ' + (S.cap + 22 < leader().cap ? 'Word is the fund “only looks at frontier-adjacent teams” now.' : 'They went with a lab that had a demo.'));
+              }
+            } },
+        ];
+      },
+    },
+
+    anomaly: {
+      title: 'the anomaly',
+      weight: 2,
+      when: function () { return S.cap >= 15; },
+      text: function () {
+        return 'Someone on the interp side finds a structure in the residual stream that should ' +
+          'not be there. It is not dangerous, probably. It is not explained, definitely. The ' +
+          'training run that produced it is scheduled to scale 10× on Friday.';
+      },
+      choices: function () {
+        return [
+          { label: 'Pause the run. Study it until it makes sense.',
+            hint: 'capability stalls · understanding ▲ · Board ▼ · stability improves',
+            effect: function () { S.und += 5; dF('board', -6); dF('theo', 8); S.flags.studied = true;
+              log('<span class="good">Three weeks later you understand the structure.</span> It was benign. This time. The knowledge, unlike the schedule, is permanent.'); } },
+          { label: 'Patch around it and keep scaling.',
+            hint: 'capability ▲ · stability quietly worsens',
+            effect: function () { S.cap += 3; dF('emp', 5); S.flags.hushed = true;
+              log('The run scales on schedule. The structure is still in there, under the patch, doing whatever it does.<sup>[4]</sup>'); } },
+          { label: 'Publish the anomaly as an open problem.',
+            hint: 'reputation ▲ · Principled ▲',
+            effect: function () { S.rep += 5; dF('theo', 6); S.und += 2;
+              log('The write-up is honest about what you don’t know. Two rival labs quietly confirm they’ve seen it too.'); } },
+        ];
+      },
+    },
+
+    candidate: {
+      title: 'a candidate',
+      weight: 2,
+      when: function () { return S.funding > 0.5; },
+      text: function () {
+        return pick(NAMES) + ' is on the market — brilliant, mid-20s, torn between offers. ' +
+          'In the interview they ask what your lab optimizes for. Both wings are listening ' +
+          'through the wall.';
+      },
+      choices: function () {
+        return [
+          { label: 'Hire them onto the scaling team.',
+            hint: '-$0.3M · team ▲ · Scalers ▲',
+            effect: function () { S.funding -= 0.3; S.team += 1; dF('emp', 6);
+              log('They start Monday. By Wednesday the cluster utilization graph has a new personal best.'); } },
+          { label: 'Hire them onto theory.',
+            hint: '-$0.3M · they accept only if reputation ≥ 15',
+            effect: function () {
+              if (S.rep >= 15) { S.funding -= 0.3; S.team += 1; dF('theo', 6); S.insight += 1;
+                log('They join theory, citing your papers as the reason. The grind gains a grinder.'); }
+              else { log('<span class="warn">They decline.</span> “I loved the vision. I just need publications to survive.”<sup>[3]</sup>'); }
+            } },
+          { label: 'Pass. The runway is the runway.',
+            hint: 'no change',
+            effect: function () { log('You write the kindest rejection you can. They sign with ' + esc(leader().name) + ' within the week.'); } },
+        ];
+      },
+    },
+
+    computeGrant: {
+      title: 'strings attached',
+      weight: 1,
+      once: true,
+      when: function () { return S.month >= 5; },
+      text: function () {
+        return 'A cloud vendor offers $3M in compute credits. The contract’s only ask is a ' +
+          '“joint public demo” within two quarters — their logo, your model, everyone’s ' +
+          'benchmark.';
+      },
+      choices: function () {
+        return [
+          { label: 'Take the credits.',
+            hint: '+$3.0M · Board ▲ · a demo comes due',
+            effect: function () { S.funding += 3; dF('board', 8); S.flags.mustDeployBy = S.month + 6; dF('theo', -4);
+              log('The credits land. So does a calendar invite, six months out, titled “DEMO (do not move).”'); } },
+          { label: 'Decline. Compute with conditions is a leash.',
+            hint: 'Principled ▲ · Board ▼',
+            effect: function () { dF('theo', 6); dF('board', -3);
+              log('The vendor is gracious. The Board circulates the news in a thread titled “runway.”'); } },
+        ];
+      },
+    },
+
+    retreat: {
+      title: 'the retreat',
+      weight: 1,
+      when: function () { return S.funding > 0.3; },
+      text: function () {
+        return 'Someone books three days in the mountains before you can object to the line item. ' +
+          'No deadlines, no leaderboard, one very large whiteboard.';
+      },
+      choices: function () {
+        return [
+          { label: 'Go. All of it. Everyone.',
+            hint: '-$0.2M · unity ▲▲ · insight ▲',
+            effect: function () { S.funding -= 0.2; S.unity = clamp(S.unity + 16, 0, 100); S.insight += 1; dF('emp', 2); dF('theo', 2);
+              log('Three days off-site. The whiteboards fill with conjectures no deadline asked for.'); } },
+          { label: 'Half the lab goes; half keeps the runs warm.',
+            hint: '-$0.1M · unity ▲ · capability drifts ▲',
+            effect: function () { S.funding -= 0.1; S.unity += 7; S.cap += 0.8;
+              log('The mountain half returns with ideas; the cluster half returns with numbers. Neither envies the other, publicly.'); } },
+        ];
+      },
+    },
+
+    deployAsk: {
+      title: 'revenue, the board suggests',
+      weight: 2,
+      when: function () { return S.cap >= 25 && !S.deployed; },
+      text: function () {
+        return 'The model is good now — good enough to charge for. The Board’s deck has a ' +
+          'slide titled “Why Not Us?” with a graph of ' + esc(leader().name) + '’s revenue. ' +
+          'The Principled have seen the deck too. Their silence is itemized.';
+      },
+      choices: function () {
+        return [
+          { label: 'Deploy. The engine starts.',
+            hint: 'monthly revenue begins · Board ▲▲ · Principled ▼ · stability strains',
+            effect: function () { S.deployed = true; dF('board', 12); dF('theo', -8);
+              log('<span class="warn">You ship.</span> Revenue begins. Somewhere in the machine are mechanisms nobody on your team can write down. The engine runs; the thermodynamics can wait.<sup>[4]</sup>'); } },
+          { label: 'Not yet. Understanding first.',
+            hint: 'requires Principled ≥ 40 to hold the room · Board ▼',
+            can: S.theo >= 40,
+            effect: function () { dF('board', -8); dF('theo', 8);
+              log('“Not yet” costs exactly one Board meeting’s worth of goodwill per month. You pay it.'); } },
+        ];
+      },
+    },
+
+    incident: {
+      title: 'the near miss',
+      weight: 0,   // never random — forced by the volatility machinery
+      text: function () {
+        return 'The model does something no one predicted, in front of ' +
+          (S.deployed ? 'users' : 'the red team') + '. It is patched within hours — by ' +
+          'intuition, not comprehension. The patch works. Nobody can say why the failure ' +
+          'happened, which means nobody can say it won’t happen again, bigger.';
+      },
+      choices: function () {
+        return [
+          { label: 'Disclose it publicly, in full.',
+            hint: 'reputation ▼ · Board ▼ · Principled ▲ · stability improves',
+            effect: function () { S.rep -= 3; dF('board', -6); dF('theo', 10); S.flags.honest = true;
+              log('The postmortem is public and unsparing. It is cited, sneered at, and quietly bookmarked by every rival safety team.'); } },
+          { label: 'Patch quietly. The demo schedule holds.',
+            hint: 'Board ▲ · stability quietly worsens',
+            effect: function () { dF('board', 4); S.flags.hushed = true;
+              log('The incident does not appear in the changelog. The boiler pressure does not appear anywhere.<sup>[4]</sup>'); } },
+          { label: 'Pause deployments; put theory on the failure.',
+            hint: 'revenue stops · understanding ▲ · Principled ▲ · Board ▼',
+            effect: function () { S.deployed = false; S.und += 4; dF('theo', 8); dF('board', -8); S.flags.studied = true;
+              log('The failure becomes a research program. Expensive, slow, and the only version of “fixed” that means anything.'); } },
+        ];
+      },
+    },
+
+    acquisitionCard: {
+      title: 'the offer',
+      weight: 0,   // forced when valuable-but-starving
+      once: true,
+      text: function () {
+        return esc(leader().name) + ' offers to acquire ' + esc(S ? S.lab : 'the lab') + '. ' +
+          'The number is generous. The language is warm. “We admire your principles,” the ' +
+          'email says. “We’d love to own them.”';
+      },
+      choices: function () {
+        return [
+          { label: 'Accept.',
+            hint: 'they get the model. you get a floor of the building.',
+            effect: function () { endGame('acquired'); } },
+          { label: 'Refuse. Starve free.',
+            hint: 'Board ▼ · the runway is what it is',
+            effect: function () { dF('board', -8);
+              log('You decline. The reply is instant and single-line: “The offer stands. They usually do, until they don’t.”'); } },
+        ];
+      },
+    },
+
+    pundit: {
+      title: 'discourse',
+      weight: 1,
+      text: function () {
+        return 'A pundit promises “post-scarcity society” by decade’s end. A second counters ' +
+          'with neo-Landian galactic empires. A third asks who will own the machines, and is ' +
+          'not invited back. Your comms person asks if you want to weigh in.';
+      },
+      choices: function () {
+        return [
+          { label: 'Weigh in: the real question is distribution, not timelines.',
+            hint: 'reputation roll · Principled ▲',
+            effect: function () {
+              if (chance(0.6)) { S.rep += 4; dF('theo', 4); log('The thread lands well. “Finally,” replies an economist you cite.<sup>[5]</sup>'); }
+              else { S.rep -= 2; log('The thread is screenshotted out of context. You mute your own name.'); }
+            } },
+          { label: 'Stay out of the discourse.',
+            hint: 'no change',
+            effect: function () { log('You close the tab. Somewhere, the discourse continues without you, as it would have anyway.'); } },
+        ];
+      },
+    },
+
+    payroll: {
+      title: 'the runway, measured in people',
+      weight: 0,   // forced when broke-ish
+      text: function () {
+        return 'Finance flags it before you can pretend otherwise: at current burn, payroll ' +
+          'clears twice more. The options are the options.';
+      },
+      choices: function () {
+        return [
+          { label: 'Bridge loan from the Board.',
+            hint: 'requires Board ≥ 40 · +$2.0M · Board ▼',
+            can: S.board >= 40,
+            effect: function () { S.funding += 2.0; dF('board', -8);
+              log('The bridge is granted, with a covenant: measurable progress, next quarter. The word “measurable” is underlined.'); } },
+          { label: 'Layoffs.',
+            hint: 'team ▼ · unity ▼▼',
+            effect: function () { S.team = Math.max(1, S.team - 1); S.unity -= 12; dF('emp', -4); dF('theo', -4);
+              log('<span class="bad">One desk goes empty.</span> The rest of the lab learns the shape of the math.'); } },
+          { label: 'Across-the-board pay cut, you included.',
+            hint: 'unity ▼ · runway extends',
+            effect: function () { S.unity -= 6; S.funding += 0.8;
+              log('Everyone takes the cut. Nobody thanks you, which is fair.'); } },
+        ];
+      },
+    },
+  };
+
+  var SCHEDULE = [
+    [0,  'founding'],
+    [3,  'titanShips'],
+    [8,  'benchmark'],
+    [12, 'hearing'],
+    [16, 'timelineAnnounce'],
+    [22, 'poachWave'],
+  ];
+
+  // ────────────────────────── card engine ──────────────────────────
+  function eligiblePool() {
+    return Object.keys(CARDS).filter(function (id) {
+      var c = CARDS[id];
+      if (!c.weight) return false;
+      if (c.once && S.fired[id]) return false;
+      if (S.recent.indexOf(id) !== -1) return false;
+      if (c.when && !c.when()) return false;
+      return true;
+    });
+  }
+
+  function drawCard() {
+    // 1. forced crises / machinery
+    if (S.forced.length) return S.forced.shift();
+    // 2. scheduled clock
+    for (var i = 0; i < SCHEDULE.length; i++) {
+      if (SCHEDULE[i][0] === S.month && !S.fired[SCHEDULE[i][1]]) return SCHEDULE[i][1];
+    }
+    if (!S.fired.finalSprint && leader().cap >= 72) return 'finalSprint';
+    // 3. weighted pool
+    var pool = eligiblePool();
+    if (!pool.length) return 'quiet';
+    var bag = [];
+    pool.forEach(function (id) { for (var k = 0; k < CARDS[id].weight; k++) bag.push(id); });
+    return pick(bag);
+  }
+
+  function renderCard(id) {
+    var c = CARDS[id];
+    S.fired[id] = true;
+    S.recent.push(id);
+    if (S.recent.length > 3) S.recent.shift();
+    var el = $('card');
+    el.innerHTML = '<div class="ev-title">' + monthLabel() + ' · ' + esc(c.title) + '</div>' +
+      '<div class="ev-text">' + c.text() + '</div>' +
+      '<div class="ev-choices"></div>';
+    var box = el.querySelector('.ev-choices');
+    c.choices().forEach(function (ch) {
+      var b = document.createElement('button');
+      b.innerHTML = esc(ch.label) + (ch.hint ? '<small>' + esc(ch.hint) + '</small>' : '');
+      if (ch.accent) b.className = 'accent';
+      b.disabled = (ch.can === false) || S.over;
+      b.addEventListener('click', function () { choose(c, ch); });
+      box.appendChild(b);
+    });
+  }
+
+  function choose(cardDef, ch) {
+    if (S.over) return;
+    var capBefore = S.cap;
+    ch.effect();
+    if (S.over) return;
+    if (cardDef.after) cardDef.after();
+    endOfMonth(capBefore);
+    if (S.over) return;
+    S.month += 1;
+    renderStats();
+    renderCard(drawCard());
+    checkEnd();
+  }
+
+  // ────────────────────────── month upkeep ──────────────────────────
+  function endOfMonth(capBefore) {
+    // burn + revenue
+    S.funding -= 0.08 * S.team;
+    if (S.deployed) S.funding += S.cap * 0.04;
+
+    // sprint modes
+    if (S.flags.allin) { S.cap += 5.0; }
+    if (S.flags.balancedSprint) { S.cap += 3.0; S.und += 1.5; }
+    if (S.flags.interpTeam) { S.und += 0.8; }
+
+    // rivals scale (the lesson is bitter and it compounds)
+    S.rivals.forEach(function (r) {
+      r.growth += r.accel;
+      r.cap += rnd(r.growth * 0.7, r.growth * 1.3);
+    });
+
+    // faction drift
+    if (S.cap + 25 < leader().cap) dF('board', -1.0);
+    if (S.cap - capBefore >= 2) dF('emp', 1);
+    if (S.flags.promisedAGI && S.cap - capBefore < 2) dF('board', -2);
+    if (S.deployed) dF('theo', -0.5);
+    S.capLastMonth = capBefore;
+
+    // deadlines
+    if (S.flags.mustDeployBy && S.month >= S.flags.mustDeployBy) {
+      if (S.deployed) { delete S.flags.mustDeployBy; dF('board', 6); }
+      else { delete S.flags.mustDeployBy; dF('board', -18);
+        log('<span class="bad">The promised demo date passes undeployed.</span> The Board’s reply-all is two sentences long.'); }
+    }
+
+    // volatility machinery — the steam engine you don't understand
+    var v = volatility();
+    if (S.cap > 20 && chance(Math.min(0.28, v * 0.009))) {
+      if (!S.nearMissUsed) {
+        S.nearMissUsed = true;
+        S.funding -= 1.0; S.rep -= 3;
+        log('<span class="bad">Incident.</span> (-$1.0M) <span class="sys">You sense the boiler pressure now.</span><sup>[4]</sup>');
+        S.forced.push('incident');
+      } else {
+        endGame('catastrophe');
+        return;
+      }
+    }
+
+    // crisis triggers
+    if (S.crisisCooldown > 0) S.crisisCooldown -= 1;
+    else {
+      if (S.emp < 25) { S.forced.push('empCrisis'); S.crisisCooldown = 6; }
+      else if (S.theo < 25) { S.forced.push('theoCrisis'); S.crisisCooldown = 6; }
+      else if (S.board < 25) { S.forced.push('boardCrisis'); S.crisisCooldown = 6; }
+    }
+
+    // money pressure cards (throttled so a broke month can't loop forever)
+    if (S.funding < 1.0 && S.funding > 0 && S.team > 1 && S.forced.indexOf('payroll') === -1 &&
+        (!S.flags.lastPayroll || S.month - S.flags.lastPayroll >= 4)) {
+      S.flags.lastPayroll = S.month;
+      S.forced.push('payroll');
+    }
+    if (S.funding < 1.5 && S.cap >= 25 && !S.fired.acquisitionCard && S.forced.indexOf('acquisitionCard') === -1) {
+      S.forced.push('acquisitionCard');
+    }
+
+    // unity collapse
+    if (S.unity <= 0 && S.team > 0) {
+      S.team -= 1; S.unity = 25;
+      log('<span class="bad">' + pick(NAMES) + ' resigns, burned out.</span> “I love this. I just can’t afford to keep loving it.”');
+    }
+    S.unity = clamp(S.unity, 0, 100);
+
+    // ambient world line
+    if (chance(0.12)) {
+      log(pick([
+        '<span class="sys">Forecast of the month: under rapid AI progress, GDP growth near 4% — labor-force participation falling toward 55%.<sup>[5]</sup></span>',
+        '<span class="sys">A grad student’s theory blog post quietly explains a failure the field has worked around for two years. It has 43 readers.</span>',
+        '<span class="sys">' + esc(leader().name) + ' raises again. The press release contains the word “safely” four times and the word “why” zero times.</span>',
+      ]));
+    }
+  }
+
+  // ────────────────────────── endings ──────────────────────────
+  function checkEnd() {
+    if (S.over) return;
+    if (S.cap >= 100) return endGame(S.und >= 60 ? 'principled' : 'raced');
+    if (leader().cap >= 100) return endGame('beaten');
+    if (S.funding <= 0) return endGame('bankrupt');
+    if (S.team <= 0) return endGame('attrition');
+  }
+
+  function stakesBlock(rows) {
+    return rows.map(function (r) {
+      return '<div class="k">' + r[0] + '</div><p>' + r[1] + '</p>';
+    }).join('');
+  }
+
+  var ENDINGS = {
+    bankrupt: {
+      title: 'natural selection',
+      body: function () {
+        return '<p>' + esc(S.lab) + ' runs out of money in ' + monthLabel() + '. No one cheated. No one was even wrong. Labs rewarded for measurable output simply outcompete more careful ones — the only condition required is that publication and progress are what careers are made of.<sup>[2]</sup></p>' +
+        stakesBlock([
+          ['who won', 'The labs that shipped. The funders who backed them.'],
+          ['who lost', 'You — and every question that needed more than a grant cycle to answer.'],
+          ['at stake', 'Which kinds of knowledge survive the selection pressure at all.'],
+        ]);
+      },
+    },
+    attrition: {
+      title: 'the field loses a person',
+      body: function () {
+        return '<p>The last researcher leaves — not because the problem stopped mattering, but because the setbacks never stopped coming. A single early-career near miss raises the odds of leaving science permanently by more than ten percent.<sup>[3]</sup> You ran a whole lab on the hard road.</p>' +
+        stakesBlock([
+          ['who won', 'Nobody. The rivals barely noticed you were gone.'],
+          ['who lost', 'The people who loved the work most, and left anyway.'],
+          ['at stake', 'Who can afford to stay curious under publish-or-perish.'],
+        ]);
+      },
+    },
+    catastrophe: {
+      title: 'the boiler bursts',
+      body: function () {
+        return '<p>In ' + monthLabel() + ', a system nobody fully understood does something nobody predicted — at scale' + (S.deployed ? ', in production, to everyone at once' : '') + '. In the 1800s, we ran steam engines for decades before thermodynamics could say why they exploded.<sup>[4]</sup> A boiler explosion ends at the factory wall. This does not.</p>' +
+        stakesBlock([
+          ['who won', 'Briefly: you. Capability ' + Math.round(S.cap) + ', understanding ' + Math.round(S.und) + '.'],
+          ['who lost', 'The people who never chose any of this — average, hardworking, uninvolved.'],
+          ['at stake', 'Whether "it works" was ever the same thing as "we know what it does."'],
+        ]);
+      },
+    },
+    beaten: {
+      title: 'someone else gets there',
+      body: function () {
+        var l = leader();
+        return '<p>' + esc(l.name) + ' announces AGI in ' + monthLabel() + '. Their understanding of it is, charitably, empirical. The future arrives owned by whoever scaled fastest, and your principles turn out to have been a spectator sport.</p>' +
+        stakesBlock([
+          ['who won', esc(l.name) + '’s shareholders. The owners of the machines.'],
+          ['who lost', 'Everyone whose bargaining power was their labor. Participation falls; the gains concentrate.<sup>[5]</sup>'],
+          ['at stake', 'Whether being careful mattered if it also meant being slow.'],
+        ]);
+      },
+    },
+    raced: {
+      title: 'you win the race',
+      body: function () {
+        return '<p>' + esc(S.lab) + ' reaches AGI in ' + monthLabel() + ' — capability 100, understanding ' + Math.round(S.und) + '. The press release writes itself. The proofs do not exist. GDP growth heads toward 4% while labor-force participation slides toward 55%; the economy produces more with fewer people in it, and the surplus flows to whoever owns the weights.<sup>[5]</sup> You, now.</p>' +
+        stakesBlock([
+          ['who won', 'You did. That is exactly the uncomfortable part.'],
+          ['who lost', 'The people the growth is measured on but not shared with.'],
+          ['at stake', '"How can an economy become far more productive while fewer people participate in it?" You now get to find out.'],
+        ]);
+      },
+    },
+    principled: {
+      title: 'solve et coagula',
+      body: function () {
+        return '<p>' + esc(S.lab) + ' reaches AGI in ' + monthLabel() + ' — and can say <em>why</em> it works. Capability 100, understanding ' + Math.round(S.und) + '. It took longer. It nearly broke your people. Empirics kept the lights on while theory caught up: not either-or, but holistic — the way the good papers do it.</p>' +
+        stakesBlock([
+          ['who won', 'Not just you: anyone downstream of a system whose failure modes can be written down.'],
+          ['who lost', 'No one had to. That was the whole argument.'],
+          ['at stake', 'One question survives the win: what would a funding structure that pays for understanding actually look like — or did you just get lucky?'],
+        ]);
+      },
+    },
+    acquired: {
+      title: 'exit',
+      body: function () {
+        return '<p>' + esc(S.rivals[0].name) + ' acquires ' + esc(S.lab) + ' in ' + monthLabel() + '. The press release calls your theory team "a strategic investment in responsible scaling." Within a year, they are running experiments. The people and institutions positioned to own the resulting systems benefit most of all.</p>' +
+        stakesBlock([
+          ['who won', 'The acquirer. And, on paper, you.'],
+          ['who lost', 'The version of the lab that existed to ask why.'],
+          ['at stake', 'Whether principles are a strategy or just early-stage branding.'],
+        ]);
+      },
+    },
+    splitEmp: {
+      title: 'the scalers walk',
+      body: function () {
+        return '<p>The Scalers resign as a bloc in ' + monthLabel() + ' and are absorbed by ' + esc(leader().name) + ' before the week is out — same badge photos, better GPUs. What remains of ' + esc(S.lab) + ' is principled, careful, and no longer able to run the experiments its own theory needs.</p>' +
+        stakesBlock([
+          ['who won', esc(leader().name) + ', who hired a trained scaling team mid-race.'],
+          ['who lost', 'Both halves of a lab that only worked as a whole.'],
+          ['at stake', 'Empirics without theory is blind — but theory without empirics is grounded. You now test the second half.'],
+        ]);
+      },
+    },
+    splitTheo: {
+      title: 'the open letter publishes',
+      body: function () {
+        return '<p>The Principled resign publicly in ' + monthLabel() + '. The letter is measured, footnoted, and read aloud on three podcasts. ' + esc(S.lab) + ' keeps shipping; the people who could have said <em>why</em> the systems work now say, from the outside, that nobody inside knows.</p>' +
+        stakesBlock([
+          ['who won', 'The discourse, briefly.'],
+          ['who lost', 'The lab’s claim to be different — the only asset that was actually yours.'],
+          ['at stake', 'Whether "safety" was a research program or a brand. The letter argues brand. Your remaining org chart agrees.'],
+        ]);
+      },
+    },
+    coup: {
+      title: 'the board decides',
+      body: function () {
+        return '<p>The vote is polite and unanimous-enough. In ' + monthLabel() + ', ' + esc(S.lab) + ' announces “new leadership for its next phase of growth.” The incoming CEO’s first all-hands uses the word “velocity” nine times. The theory reading group is “paused.” Labs rewarded for measurable output outcompete more careful ones — including from the inside.<sup>[2]</sup></p>' +
+        stakesBlock([
+          ['who won', 'The Board, who never needed you to be right — only fundable.'],
+          ['who lost', 'The version of this lab that existed on purpose.'],
+          ['at stake', 'Whether principle can hold an institution when the institution is owned by someone else.'],
+        ]);
+      },
+    },
+  };
+
+  function endGame(key) {
+    S.over = true;
+    var e = ENDINGS[key];
+    var html = e.body() +
+      '<p class="fineprint">In the timeline where this lab never existed, ' + esc(leader().name) + ' gets there anyway — uncomprehended, and owned.</p>' +
+      '<p class="fineprint">footnotes: [1] Sutton, “The Bitter Lesson” · [2] Smaldino &amp; McElreath, “The Natural Selection of Bad Science” · [3] Wang et al., <em>Nature Communications</em> · [4] the steam engine preceded thermodynamics · [5] Karger et al., NBER; IMF DataMapper</p>';
+
+    // the ending is also the final entry in the record…
+    log('<span class="bad">The run ends here: ' + esc(e.title) + '.</span> ' +
+        '<span class="sys">capability ' + Math.round(S.cap) + ' · understanding ' + Math.round(S.und) +
+        ' · ' + fmtM(Math.max(0, S.funding)) + ' · team ' + S.team + '</span>');
+
+    // …and the final event card, so nothing is hidden behind the overlay.
+    $('card').innerHTML =
+      '<div class="ev-title">' + monthLabel() + ' · the record ends · ' + esc(e.title) + '</div>' +
+      '<div class="ev-text">' + html + '</div>' +
+      '<div class="ev-choices"><button id="cardAgainBtn">run it back</button></div>';
+    $('cardAgainBtn').addEventListener('click', backToIntro);
+
+    $('endTitle').textContent = e.title;
+    $('endBody').innerHTML = html;
+    $('ending').style.display = 'flex';
+    renderStats();
+  }
+
+  // ────────────────────────── boot ──────────────────────────
+  function start() {
+    var name = $('labname').value.trim() || 'Squircle Labs';
+    S = freshState(name);
+    $('log').innerHTML = '';
+    $('intro').style.display = 'none';
+    $('ending').style.display = 'none';
+    log('<span class="sys">' + esc(name) + ' opens its doors. Three researchers, six million dollars, and a question: when the stakes are this high, why has no one built this carefully?</span>');
+    renderStats();
+    renderCard(drawCard());
+  }
+
+  function backToIntro() {
+    $('ending').style.display = 'none';
+    $('intro').style.display = 'flex';
+  }
+
+  $('startBtn').addEventListener('click', start);
+  $('againBtn').addEventListener('click', backToIntro);
+  $('viewBtn').addEventListener('click', function () {
+    $('ending').style.display = 'none';   // reveal the board, the log, and the final card
+  });
+  $('labname').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') start();
+  });
+
+  // debug hook for testing
+  window.__frontier = {
+    state: function () { return S; },
+    end: endGame,
+    draw: function (id) { renderCard(id); },
+    set: function (patch) { Object.assign(S, patch); renderStats(); checkEnd(); },
+  };
+})();
+</script>
+</body>
+</html>
