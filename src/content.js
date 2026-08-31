@@ -8,7 +8,6 @@ const CONTENT = {
   ],
   email: 'solomon@ucsd.edu',
   emailAlt: 'sungwoocho2007@gmail.com',
-  cv: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
   // Set to '' for hiding the buttons
   github:  'https://github.com/scmaster2007',
   twitter: '',
