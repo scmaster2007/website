@@ -313,6 +313,11 @@
         <b>the Scalers</b>, <b>the Principled</b>, and <b>the Board</b>. Lose any
         of them completely and you will not need a rival to end you.
       </p>
+      <p class="fineprint">
+        The negative effects of careless creation could be unknowably high — and
+        the real versions of these decisions are being made right now, by
+        researchers mostly in their mid-20s, in the offices photographed below.
+      </p>
       <input type="text" id="labname" maxlength="24" placeholder="name your lab" value="Squircle Labs" autocomplete="off">
       <div class="row"><button id="startBtn">begin</button></div>
     </div>
@@ -1203,37 +1208,42 @@
     }).join('');
   }
 
+  // Ending prose is drawn directly from the essay this game translates
+  // (“The Maxims of Principled AI Development”) — the argument in its own words.
   var ENDINGS = {
     bankrupt: {
       title: 'natural selection',
       body: function () {
-        return '<p>' + esc(S.lab) + ' runs out of money in ' + monthLabel() + '. No one cheated. No one was even wrong. Labs rewarded for measurable output simply outcompete more careful ones — the only condition required is that publication and progress are what careers are made of.<sup>[2]</sup></p>' +
+        return '<p>' + esc(S.lab) + ' runs out of money in ' + monthLabel() + '.</p>' +
+        '<p>In “The Natural Selection of Bad Science”, Smaldino and McElreath model science as an evolving population in which labs rewarded for measurable output outcompete more careful ones, with no deliberate cheating required.<sup>[2]</sup> A benchmark either rises or it does not, and this instant feedback becomes papers, papers become grants, and grants become money and salary — money and salary that are fed back into workers to start the cycle all over again. You stepped outside the cycle. The cycle did not notice.</p>' +
         stakesBlock([
-          ['who won', 'The labs that shipped. The funders who backed them.'],
-          ['who lost', 'You — and every question that needed more than a grant cycle to answer.'],
-          ['at stake', 'Which kinds of knowledge survive the selection pressure at all.'],
+          ['who won', 'Organizations that can demonstrate measurable progress in a timely manner are able to get funding, while organizations that lag behind oftentimes do not.'],
+          ['who lost', 'Slow theoretical questions — because mathematics does not follow the rule of product management and is difficult to deliver on a strict deadline.'],
+          ['at stake', 'Society, so long as it is organized in this way of incentivizing quick results that have potential to make more money, takes on the risk of building systems that outrun our ability to understand them.'],
         ]);
       },
     },
     attrition: {
       title: 'the field loses a person',
       body: function () {
-        return '<p>The last researcher leaves — not because the problem stopped mattering, but because the setbacks never stopped coming. A single early-career near miss raises the odds of leaving science permanently by more than ten percent.<sup>[3]</sup> You ran a whole lab on the hard road.</p>' +
+        return '<p>The last researcher leaves ' + esc(S.lab) + ' in ' + monthLabel() + '.</p>' +
+        '<p>Academia and research-related fields are extremely difficult due to the maxim of “publish or perish”, which can put a lot of unnecessary, unproductive pressure on fresh graduates, and can even force them to quit what they love doing over a mistake or a rejected submission. A single early-career funding near miss significantly increases the probability of attrition, predicting more than a 10% chance of disappearing permanently from the field.<sup>[3]</sup> The sheer number of failures and setbacks associated with theory work has made me almost quit many times. Your whole lab lived on that road.</p>' +
         stakesBlock([
-          ['who won', 'Nobody. The rivals barely noticed you were gone.'],
-          ['who lost', 'The people who loved the work most, and left anyway.'],
-          ['at stake', 'Who can afford to stay curious under publish-or-perish.'],
+          ['who won', 'Researchers in empirical subfields, who gain faster feedback and thus safer careers.'],
+          ['who lost', 'The people forced to quit what they love doing over a mistake or a rejected submission.'],
+          ['at stake', 'A hurdle which will no doubt take the full, combined effort of all scientists to solve — minus, now, yours.'],
         ]);
       },
     },
     catastrophe: {
       title: 'the boiler bursts',
       body: function () {
-        return '<p>In ' + monthLabel() + ', a system nobody fully understood does something nobody predicted — at scale' + (S.deployed ? ', in production, to everyone at once' : '') + '. In the 1800s, we ran steam engines for decades before thermodynamics could say why they exploded.<sup>[4]</sup> A boiler explosion ends at the factory wall. This does not.</p>' +
+        return '<p>In ' + monthLabel() + ', a system nobody fully understood does something nobody predicted — at scale' + (S.deployed ? ', in production, to everyone at once' : '') + '.</p>' +
+        '<p>Before the field of thermodynamics had caught up to the empirical success of steam engines, people were being sent to manage steam engines in locomotives and in other sectors of industry, unknowing of the potential dangers hidden within uncomprehended mechanisms.<sup>[4]</sup> For AI, a technology with a huge amount of potential to fundamentally alter conscious experience as we know it, this type of developmental process had too much built-in volatility and variance across possible futures. The negative effects of careless creation could be unknowably high. “Could,” until ' + monthLabel() + '.</p>' +
         stakesBlock([
           ['who won', 'Briefly: you. Capability ' + Math.round(S.cap) + ', understanding ' + Math.round(S.und) + '.'],
-          ['who lost', 'The people who never chose any of this — average, hardworking, uninvolved.'],
-          ['at stake', 'Whether "it works" was ever the same thing as "we know what it does."'],
+          ['who lost', 'Average, hardworking, and uninvolved citizens.'],
+          ['at stake', 'A rising benchmark alone tells us that something works without telling us why.'],
         ]);
       },
     },
@@ -1241,77 +1251,84 @@
       title: 'someone else gets there',
       body: function () {
         var l = leader();
-        return '<p>' + esc(l.name) + ' announces AGI in ' + monthLabel() + '. Their understanding of it is, charitably, empirical. The future arrives owned by whoever scaled fastest, and your principles turn out to have been a spectator sport.</p>' +
+        return '<p>' + esc(l.name) + ' announces AGI in ' + monthLabel() + '. ' + esc(S.lab) + ' watches from ' + Math.round(100 - S.cap) + ' points behind.</p>' +
+        '<p>Under a rapid AI progress scenario, experts forecast annualized GDP growth rising to around 4%, while U.S. labor force participation falls from about 62% to 55% by 2050, with roughly half of that decline attributable to AI.<sup>[5]</sup> Any future with AI involved is strangely unintuitive and difficult to grasp — and this one now arrives on someone else’s terms.</p>' +
         stakesBlock([
-          ['who won', esc(l.name) + '’s shareholders. The owners of the machines.'],
-          ['who lost', 'Everyone whose bargaining power was their labor. Participation falls; the gains concentrate.<sup>[5]</sup>'],
-          ['at stake', 'Whether being careful mattered if it also meant being slow.'],
+          ['who won', 'The people and institutions positioned to own the resulting AI systems benefit most of all.'],
+          ['who lost', 'How can an economy become far more productive while fewer people participate in its labor force? The people inside that question.'],
+          ['at stake', 'The stakes at hand are too large to be steered by deadlines and grant cycles alone. They were anyway.'],
         ]);
       },
     },
     raced: {
       title: 'you win the race',
       body: function () {
-        return '<p>' + esc(S.lab) + ' reaches AGI in ' + monthLabel() + ' — capability 100, understanding ' + Math.round(S.und) + '. The press release writes itself. The proofs do not exist. GDP growth heads toward 4% while labor-force participation slides toward 55%; the economy produces more with fewer people in it, and the surplus flows to whoever owns the weights.<sup>[5]</sup> You, now.</p>' +
+        return '<p>' + esc(S.lab) + ' reaches AGI in ' + monthLabel() + ' — capability 100, understanding ' + Math.round(S.und) + '. The proofs do not exist.</p>' +
+        '<p>How can an economy become far more productive while fewer people participate in its labor force? With the rise of the GDP, where does the increased wealth go? Who receives the benefits and who toils under harsh conditions to produce this Capital?<sup>[5]</sup> Most of these questions went unanswered even within the AI Safety scene. They are your questions now, because you own the system that will answer them.</p>' +
         stakesBlock([
-          ['who won', 'You did. That is exactly the uncomfortable part.'],
-          ['who lost', 'The people the growth is measured on but not shared with.'],
-          ['at stake', '"How can an economy become far more productive while fewer people participate in it?" You now get to find out.'],
+          ['who won', 'You — and the people and institutions positioned to own the resulting AI systems benefit most of all.'],
+          ['who lost', 'Average, hardworking, and uninvolved citizens.'],
+          ['at stake', 'The negative effects of careless creation could be unknowably high. Yours is now running.'],
         ]);
       },
     },
     principled: {
       title: 'solve et coagula',
       body: function () {
-        return '<p>' + esc(S.lab) + ' reaches AGI in ' + monthLabel() + ' — and can say <em>why</em> it works. Capability 100, understanding ' + Math.round(S.und) + '. It took longer. It nearly broke your people. Empirics kept the lights on while theory caught up: not either-or, but holistic — the way the good papers do it.</p>' +
+        return '<p>' + esc(S.lab) + ' reaches AGI in ' + monthLabel() + ' — capability 100, understanding ' + Math.round(S.und) + ' — and can say <em>why</em> it works.</p>' +
+        '<p>The takeaway is not that empirical research is bad and theory is good. Life is never this black and white. Empirical work will always be necessary when theory fails, and theory is necessary because a rising benchmark alone tells us that something works without telling us why, and a good paper will utilize the two holistically. So did this run.</p>' +
         stakesBlock([
-          ['who won', 'Not just you: anyone downstream of a system whose failure modes can be written down.'],
-          ['who lost', 'No one had to. That was the whole argument.'],
-          ['at stake', 'One question survives the win: what would a funding structure that pays for understanding actually look like — or did you just get lucky?'],
+          ['who won', 'These were never just the simple gripes of researchers, but rather the monumental hurdle of all conscious beings on Earth — cleared, here, by their full, combined effort.'],
+          ['who lost', 'No one had to.'],
+          ['at stake', '“What would a funding structure that pays for understanding actually look like?” And “Can this tension ever fade under current conditions, or can it only change with the change of something bigger?” You won without answering either.'],
         ]);
       },
     },
     acquired: {
       title: 'exit',
       body: function () {
-        return '<p>' + esc(S.rivals[0].name) + ' acquires ' + esc(S.lab) + ' in ' + monthLabel() + '. The press release calls your theory team "a strategic investment in responsible scaling." Within a year, they are running experiments. The people and institutions positioned to own the resulting systems benefit most of all.</p>' +
+        return '<p>' + esc(S.rivals[0].name) + ' acquires ' + esc(S.lab) + ' in ' + monthLabel() + '.</p>' +
+        '<p>So, who benefits from this system of empirics-focused research? Mainly organizations that can demonstrate measurable progress in a timely manner are able to get funding — and the people and institutions positioned to own the resulting AI systems benefit most of all.<sup>[2]</sup> As of this morning, they own yours.</p>' +
         stakesBlock([
           ['who won', 'The acquirer. And, on paper, you.'],
           ['who lost', 'The version of the lab that existed to ask why.'],
-          ['at stake', 'Whether principles are a strategy or just early-stage branding.'],
+          ['at stake', 'Whether a principled account of why these models function was ever something Capital would pay to keep.'],
         ]);
       },
     },
     splitEmp: {
       title: 'the scalers walk',
       body: function () {
-        return '<p>The Scalers resign as a bloc in ' + monthLabel() + ' and are absorbed by ' + esc(leader().name) + ' before the week is out — same badge photos, better GPUs. What remains of ' + esc(S.lab) + ' is principled, careful, and no longer able to run the experiments its own theory needs.</p>' +
+        return '<p>The Scalers resign as a bloc in ' + monthLabel() + ' and join ' + esc(leader().name) + ' before the week is out.</p>' +
+        '<p>Empirical work will always be necessary when theory fails, and theory is necessary because a rising benchmark alone tells us that something works without telling us why, and a good paper will utilize the two holistically. A lab that keeps only one half keeps neither. What remains of ' + esc(S.lab) + ' can still write the proofs — and can no longer run the experiments its own theory needs.</p>' +
         stakesBlock([
           ['who won', esc(leader().name) + ', who hired a trained scaling team mid-race.'],
           ['who lost', 'Both halves of a lab that only worked as a whole.'],
-          ['at stake', 'Empirics without theory is blind — but theory without empirics is grounded. You now test the second half.'],
+          ['at stake', 'Experimentation is fundamentally easier: you either reach the benchmark quota, or you don’t. Somewhere else, now, they are reaching it.'],
         ]);
       },
     },
     splitTheo: {
       title: 'the open letter publishes',
       body: function () {
-        return '<p>The Principled resign publicly in ' + monthLabel() + '. The letter is measured, footnoted, and read aloud on three podcasts. ' + esc(S.lab) + ' keeps shipping; the people who could have said <em>why</em> the systems work now say, from the outside, that nobody inside knows.</p>' +
+        return '<p>The Principled resign publicly in ' + monthLabel() + '. The letter is measured, footnoted, and everywhere.</p>' +
+        '<p>It says what the whiteboards already said: a lab focused on making models as powerful as possible, without a principled account of why these models function or how to improve them safely. This was the tension that bothered me when I walked through offices like yours. It is now the tension your own researchers published on their way out the door.</p>' +
         stakesBlock([
           ['who won', 'The discourse, briefly.'],
-          ['who lost', 'The lab’s claim to be different — the only asset that was actually yours.'],
-          ['at stake', 'Whether "safety" was a research program or a brand. The letter argues brand. Your remaining org chart agrees.'],
+          ['who lost', esc(S.lab) + '’s claim to be different — the only asset that was actually yours.'],
+          ['at stake', 'Whether “safety” was a research program or a brand. The letter argues brand. Your remaining org chart agrees.'],
         ]);
       },
     },
     coup: {
       title: 'the board decides',
       body: function () {
-        return '<p>The vote is polite and unanimous-enough. In ' + monthLabel() + ', ' + esc(S.lab) + ' announces “new leadership for its next phase of growth.” The incoming CEO’s first all-hands uses the word “velocity” nine times. The theory reading group is “paused.” Labs rewarded for measurable output outcompete more careful ones — including from the inside.<sup>[2]</sup></p>' +
+        return '<p>The vote is polite and unanimous-enough. In ' + monthLabel() + ', ' + esc(S.lab) + ' announces “new leadership for its next phase of growth.”</p>' +
+        '<p>Ultimately, the stakes at hand are too large to be steered by deadlines and grant cycles alone. The Board disagreed — and the Board owns the steering. Labs rewarded for measurable output outcompete more careful ones, with no deliberate cheating required.<sup>[2]</sup> Sometimes the selection happens from the inside.</p>' +
         stakesBlock([
           ['who won', 'The Board, who never needed you to be right — only fundable.'],
           ['who lost', 'The version of this lab that existed on purpose.'],
-          ['at stake', 'Whether principle can hold an institution when the institution is owned by someone else.'],
+          ['at stake', 'Can this tension ever fade under current conditions, or can it only change with the change of something bigger?'],
         ]);
       },
     },
@@ -1321,7 +1338,10 @@
     S.over = true;
     var e = ENDINGS[key];
     var html = e.body() +
-      '<p class="fineprint">In the timeline where this lab never existed, ' + esc(leader().name) + ' gets there anyway — uncomprehended, and owned.</p>' +
+      '<div class="k">why now</div>' +
+      '<p>None of this is hypothetical. The essay behind this game came from walking through these offices in the summer of 2026 — well-equipped spaces built to invigorate young, growing minds, where the average age of researchers is somewhere in the mid-20s, and where most of the writing on the boards revolved around model scaling and new experiments to massively improve capabilities. The deeper level underneath my tension is that forms of knowledge easiest for our institutions to capitalize on may not be the forms of knowledge that are needed during times of extraordinary societal change — and that the people who will inevitably suffer from this disparity will be average, hardworking, and uninvolved citizens. These are not just the simple gripes of researchers, but rather the monumental hurdle of all conscious beings on Earth.</p>' +
+      '<p>In my opinion, the only ones with definitive answers will be time, and the people unfortunate enough to live during the time these questions get answered.</p>' +
+      '<p class="fineprint">That is you. Every choice in this run was locally reasonable — scroll back through the record and find the month it went wrong, if you can.</p>' +
       '<p class="fineprint">footnotes: [1] Sutton, “The Bitter Lesson” · [2] Smaldino &amp; McElreath, “The Natural Selection of Bad Science” · [3] Wang et al., <em>Nature Communications</em> · [4] the steam engine preceded thermodynamics · [5] Karger et al., NBER; IMF DataMapper</p>';
 
     // the ending is also the final entry in the record…
