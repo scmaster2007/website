@@ -35,8 +35,8 @@ const CONTENT = {
   ],
 
   now: [
-    `Reading: Ethics by Spinoza`,
-    `Working: on my papers!`,
+    `Listening to: \"I'm Upping My P(Doom)\" (Claude)`,
+    `Taking: CSE251U, CSE150B, CSE103, MATH140A (for fun)`,
     `**P.S. Scroll all the way down!**`,
   ],
 
@@ -52,6 +52,8 @@ const CONTENT = {
 
   blog: [
     { date: '2026-08-11', title: 'Update', slug: 'personalupdate', locked: true, category: 'Personal'},
+
+    { date: '2026-08-09', title: 'On AI Safety', slug: 'aisafety', category: 'Notes'},
     
     { date: '2026-06-10', title: 'A Proof Regarding TzimTzum', slug: 'einsof', category: 'Philosophy'},
   
